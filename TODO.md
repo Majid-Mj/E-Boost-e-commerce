@@ -1,0 +1,5 @@
+- [x] Add "carts", "wishlists", "orders" arrays to db.json
+- [x] Remove unused custom middlewares from server.js (/users/:id/cart, /users/:id/orders, /users/:id/wishlist)
+- [x] Fix ProductDetail.jsx to use /api/products/${id} instead of localhost
+- [x] Add add to cart button to Productsview.jsx
+- [x] Test the buttons functionality (servers running, ready for manual testing)
