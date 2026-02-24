@@ -251,7 +251,7 @@
             "zip": "678583"
           },
           "date": "2025-11-18T10:46:44.472Z",
-          "status": "Shipped"
+          "status": "Cancelled"
         },
         {
           "userId": "1762167694535",
@@ -325,6 +325,50 @@
             "zip": "678543"
           },
           "date": "2025-11-23T09:44:19.915Z",
+          "status": "pending"
+        },
+        {
+          "userId": "1762167694535",
+          "items": [
+            {
+              "id": "438a",
+              "userId": "1762167694535",
+              "productId": "3",
+              "quantity": 1,
+              "product": {
+                "name": "Ergonomic Mouse",
+                "category": "mouse",
+                "price": 3000,
+                "stock": 10,
+                "image": "/assets/products/mouse1.png",
+                "id": "3"
+              }
+            },
+            {
+              "id": "8853",
+              "userId": "1762167694535",
+              "productId": "2",
+              "quantity": 2,
+              "product": {
+                "name": "EvoFox Fireblade TKL Semi-Mechanical Gaming Keyboard ",
+                "category": "keyboards",
+                "price": 2500,
+                "stock": 15,
+                "image": "/assets/products/keyboard1.png",
+                "id": "2"
+              }
+            }
+          ],
+          "total": 8000,
+          "address": {
+            "fullName": "majid",
+            "phone": "8510457952",
+            "street": "kerala india",
+            "city": "calicut",
+            "state": "Kerala",
+            "zip": "678543"
+          },
+          "date": "2026-02-19T04:53:55.822Z",
           "status": "pending"
         }
       ],
@@ -1039,7 +1083,7 @@
       }
     },
     {
-      "id": "219e",
+      "id": "0f8e",
       "userId": "1762167694535",
       "productId": "2",
       "product": {

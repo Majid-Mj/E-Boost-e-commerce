@@ -19,7 +19,6 @@ import Orders from "../pages/User/Orders";
 import AdminRoutes from "./AdminRoutes";
 
  
-
 export default function AppRoutes() {
   return (
     <CartProvider>
@@ -44,8 +43,6 @@ export default function AppRoutes() {
           <Route path="/address" element={<Addaddress/>}/>
           <Route path="/payment" element={<Payment/>}/>
           <Route path="/orders" element={<Orders/>}/>
-
-
           <Route path="/admin/*" element={<AdminRoutes />} />
         </Routes>
       </Router>
