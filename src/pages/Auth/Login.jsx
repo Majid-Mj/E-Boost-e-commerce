@@ -262,46 +262,44 @@ export default function Login() {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const validationErrors = validate();
-    setErrors(validationErrors);
+  const validationErrors = validate();
+  setErrors(validationErrors);
 
-    if (Object.keys(validationErrors).length > 0) return;
+  if (Object.keys(validationErrors).length > 0) return;
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      await api.post("/auth/login", {
-        email: formData.email,
-        password: formData.password
-      });
+  try {
+    await api.post("/auth/login", {
+      email: formData.email,
+      password: formData.password
+    });
 
-  
-      const meRes = await api.get("/auth/me");
-      const user = meRes.data.data;
+    const meRes = await api.get("/auth/me");
+    const user = meRes.data.data;
 
-      setUser(user);
+    setUser(user);
 
-      toast.success("Login successful!");
+    toast.success("Login successful!");
 
-      // Role-based redirect
-      if (user.roleId === 2 || user.roleId === "2") {
-        navigate("/admin");
-      } else {
-        navigate("/home");
-      }
-
-    } catch (error) {
-      toast.error(
-        error?.response?.data?.message ||
-        "Invalid email or password"
-      );
-    } finally {
-      setLoading(false);
+    if (user.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/home");
     }
-  };
+
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message ||
+      "Invalid email or password"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
