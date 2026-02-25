@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../../api";
+import api from "../../config/api";
 
 export default function Signup() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -19,7 +19,7 @@ export default function Signup() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };    
+  };
 
   const handleBlur = (e) => {
     const { name } = e.target;
@@ -28,15 +28,22 @@ export default function Signup() {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name) newErrors.name = "Name is required";
 
-    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.fullName)
+      newErrors.fullName = "Name is required";
+
+    if (!formData.email)
+      newErrors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.email))
       newErrors.email = "Enter a valid email";
 
-    if (!formData.password) newErrors.password = "Password is required";
-    else if (formData.password.length < 6)
-      newErrors.password = "Minimum 6 characters required";
+    if (!formData.password)
+      newErrors.password = "Password is required";
+    else if (
+            !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(formData.password)
+       )
+      newErrors.password =
+           "Password must contain uppercase, lowercase, number and special character (min 8 chars)";
 
     if (!formData.confirmPassword)
       newErrors.confirmPassword = "Please confirm your password";
@@ -54,15 +61,20 @@ export default function Signup() {
     if (Object.keys(validationErrors).length === 0) {
       setLoading(true);
       try {
-        const response = await registerUser({
-          name: formData.name,
+          await api.post("/auth/register", {
+          fullName: formData.fullName,
           email: formData.email,
           password: formData.password,
+          confirmPassword: formData.confirmPassword
         });
+
         alert("Signup successful!");
         navigate("/login");
+
       } catch (error) {
-        alert(error.response?.data?.error || "Signup failed");
+        alert(
+          error.response?.data?.message || "Signup failed"
+        );
       } finally {
         setLoading(false);
       }
@@ -73,7 +85,7 @@ export default function Signup() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
       <div className="bg-[#1e293b] p-8 rounded-xl shadow-md w-[90%] max-w-md border border-gray-700">
         <h2 className="text-3xl font-semibold mb-6 text-center text-cyan-400">
-          Create Account 
+          Create Account
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -81,18 +93,17 @@ export default function Signup() {
             <label className="block mb-1 text-gray-300">Full Name</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="fullName"
+              value={formData.fullName}
               onBlur={handleBlur}
               onChange={handleChange}
               className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
             />
-            {touched.name && errors.name && (
-              <p className="text-red-400 text-sm mt-1">{errors.name}</p>
+            {touched.fullName && errors.fullName && (
+              <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>
             )}
           </div>
 
- 
           <div>
             <label className="block mb-1 text-gray-300">Email</label>
             <input
@@ -108,7 +119,6 @@ export default function Signup() {
             )}
           </div>
 
-   
           <div>
             <label className="block mb-1 text-gray-300">Password</label>
             <input
@@ -124,7 +134,6 @@ export default function Signup() {
             )}
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label className="block mb-1 text-gray-300">Confirm Password</label>
             <input

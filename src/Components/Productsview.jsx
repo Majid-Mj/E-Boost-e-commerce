@@ -3,18 +3,18 @@ import axios from "axios";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/Cartcontext";
-import { API_BASE_URL } from "../api";
+import api from "../config/api";
 
 export default function ProductsView() {
   const [products, setProducts] = useState([]);
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist, wishlist } = useCart();
 
-  useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/products?_limit=10`)
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Error fetching products:", err));
-  }, []);
+useEffect(() => {
+  api
+    .get("/products")   // no need for full URL
+    .then((res) => setProducts(res.data))
+    .catch((err) => console.error("Error fetching products:", err));
+}, []);
 
   const calculateDiscount = (originalPrice, price) => {
     if (originalPrice > price) {

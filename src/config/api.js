@@ -5,7 +5,8 @@ const api = axios.create({
   withCredentials: true
 });
 
-// 🔁 Response Interceptor
+
+// Response Interceptor
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
