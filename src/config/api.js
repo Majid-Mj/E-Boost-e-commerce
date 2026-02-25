@@ -5,28 +5,20 @@ const api = axios.create({
   withCredentials: true
 });
 
-
-// Response Interceptor
+// THEN add interceptor
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
 
-    // If 401 and not already retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/auth/refresh")
+    ) {
       originalRequest._retry = true;
-
-      try {
-        // Call refresh endpoint
-        await api.post("/auth/refresh");
-
-        // Retry original request
-        return api(originalRequest);
-      } catch (refreshError) {
-        // If refresh fails → logout
-        window.location.href = "/login";
-        return Promise.reject(refreshError);
-      }
+      await api.post("/auth/refresh");
+      return api(originalRequest);
     }
 
     return Promise.reject(error);

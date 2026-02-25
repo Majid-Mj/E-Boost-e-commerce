@@ -21,9 +21,7 @@ export const AuthProvider = ({ children }) => {
 
 
  const logout = async () => {
-  // 1️⃣ Instantly update UI
   setUser(null);
-  // 2️⃣ Then call backend in background
   try {
     await api.post("/auth/logout");
   } catch (err) {

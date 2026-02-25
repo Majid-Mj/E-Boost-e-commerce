@@ -1,15 +1,16 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { FaUser, FaEnvelope, FaUserTag, FaLock, FaSignOutAlt } from "react-icons/fa";
-import ChangePasswordModal from "../../Components/ChangePassword"; 
-import { useContext } from "react";
+import ChangePasswordModal from "../../Components/ChangePassword";
 import { AuthContext } from "../../contexts/AuthContext";
 
 export default function User() {
   const { user, logout } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate(); // ✅ THIS WAS MISSING
+
   console.log("USER FROM CONTEXT:", user);
 
   if (!user) {
@@ -24,12 +25,12 @@ export default function User() {
             <p className="text-gray-300 mb-6">
               Please log in to view your profile.
             </p>
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="bg-[#00FFFF] text-black px-6 py-3 rounded-md font-semibold hover:bg-cyan-400 transition"
             >
               Login
-            </a>
+            </Link>
           </div>
         </div>
         <Footer />
@@ -83,9 +84,9 @@ export default function User() {
             </Link>
 
             <button
-              onClick={async ()=> {
+              onClick={async () => {
                 await logout();
-                navigate("/");
+                navigate("/", { replace: true }); // ✅ use "/" not "/home" unless you have that route
               }}
               className="w-full bg-[#333041]/80 hover:bg-[#413b55] transition p-3 rounded-lg flex items-center justify-center gap-3 border border-gray-700 mt-4"
             >
@@ -95,8 +96,12 @@ export default function User() {
         </div>
       </div>
 
-      {/* External Change Password Modal */}
-      {showModal && <ChangePasswordModal user={user} onClose={() => setShowModal(false)} />}
+      {showModal && (
+        <ChangePasswordModal
+          user={user}
+          onClose={() => setShowModal(false)}
+        />
+      )}
 
       <Footer />
     </div>
