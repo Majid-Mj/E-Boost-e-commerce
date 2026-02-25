@@ -2,15 +2,18 @@ import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
-export default function ProtectedRoute({ children, requiredRole }) {
-  const { user, loading } = useContext(AuthContext);
+export default function ProtectedRoute({ children, role }) {
+  const { user } = useContext(AuthContext);
 
-  if (loading) return <p>Checking session...</p>;
+  // Not logged in
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-  if (!user) return <Navigate to="/login" />;
-
-  if (requiredRole && user.roleId !== requiredRole)
-    return <Navigate to="/home" />;
+  // Role restriction (optional)
+  if (role && user.roleId !== role) {
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 }

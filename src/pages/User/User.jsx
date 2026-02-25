@@ -3,15 +3,16 @@ import { Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { FaUser, FaEnvelope, FaUserTag, FaLock, FaSignOutAlt } from "react-icons/fa";
-import ChangePasswordModal from "../../Components/ChangePassword"; // ✅ import here
+import ChangePasswordModal from "../../Components/ChangePassword"; 
+import { useContext } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function User() {
-  const user = JSON.parse(localStorage.getItem("loggedInUser")) || {};
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
-
+  const { user, logout } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
+  console.log("USER FROM CONTEXT:", user);
 
-  if (!isLoggedIn) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
         <Navbar />
@@ -48,14 +49,14 @@ export default function User() {
           </div>
 
           <h2 className="text-2xl font-semibold mb-1">
-            Welcome, <span className="text-[#00FFFF]">{user.name || "User"}</span>
+            Welcome, <span className="text-[#00FFFF]">{user.fullName || "User"}</span>
           </h2>
           <p className="text-gray-400 text-sm mb-6">Manage your account details</p>
 
           <div className="space-y-3 text-left">
             <div className="flex items-center gap-3 bg-[#2a243a]/80 p-3 rounded-lg border border-gray-700">
               <FaUser className="text-purple-400" />
-              <p><span className="text-gray-400">Name:</span> {user.name || "N/A"}</p>
+              <p><span className="text-gray-400">Name:</span> {user.fullName || "N/A"}</p>
             </div>
             <div className="flex items-center gap-3 bg-[#2a243a]/80 p-3 rounded-lg border border-gray-700">
               <FaEnvelope className="text-yellow-400" />
@@ -82,10 +83,9 @@ export default function User() {
             </Link>
 
             <button
-              onClick={() => {
-                localStorage.removeItem("isLoggedIn");
-                localStorage.removeItem("loggedInUser");
-                window.location.href = "/";
+              onClick={async ()=> {
+                await logout();
+                navigate("/");
               }}
               className="w-full bg-[#333041]/80 hover:bg-[#413b55] transition p-3 rounded-lg flex items-center justify-center gap-3 border border-gray-700 mt-4"
             >

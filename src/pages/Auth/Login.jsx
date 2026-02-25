@@ -280,7 +280,7 @@ export default function Login() {
 
   
       const meRes = await api.get("/auth/me");
-      const user = meRes.data;
+      const user = meRes.data.data;
 
       setUser(user);
 
