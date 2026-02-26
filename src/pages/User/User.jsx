@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
@@ -9,10 +9,16 @@ import { AuthContext } from "../../contexts/AuthContext";
 export default function User() {
   const { user, logout } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate(); // ✅ THIS WAS MISSING
+  const navigate = useNavigate();
 
-  console.log("USER FROM CONTEXT:", user);
+  useEffect(() => {
+    if (user && (user.roleId == 2 || user.role === "admin")) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
 
+    console.log(user)
+    
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
@@ -65,7 +71,10 @@ export default function User() {
             </div>
             <div className="flex items-center gap-3 bg-[#2a243a]/80 p-3 rounded-lg border border-gray-700">
               <FaUserTag className="text-green-400" />
-              <p><span className="text-gray-400">Role:</span> user</p>
+              <p>
+                <span className="text-gray-400">Role:</span>{" "}
+                {user.roleId === 2 ? "Admin" : "User"}
+              </p>
             </div>
           </div>
 
@@ -77,16 +86,18 @@ export default function User() {
               <FaLock /> Change Password
             </button>
 
-            <Link to="/orders">
-              <button className="w-full bg-[#00FFFF] hover:bg-cyan-400 transition p-3 rounded-lg font-semibold flex items-center justify-center gap-2 text-black">
-                View Orders
-              </button>
-            </Link>
+            {user.roleId === 1 && (
+              <Link to="/orders">
+                <button className="w-full bg-[#00FFFF] hover:bg-cyan-400 transition p-3 rounded-lg font-semibold flex items-center justify-center gap-2 text-black">
+                  View Orders
+                </button>
+              </Link>
+            )}
 
             <button
               onClick={async () => {
                 await logout();
-                navigate("/", { replace: true }); // ✅ use "/" not "/home" unless you have that route
+                navigate("/", { replace: true });
               }}
               className="w-full bg-[#333041]/80 hover:bg-[#413b55] transition p-3 rounded-lg flex items-center justify-center gap-3 border border-gray-700 mt-4"
             >

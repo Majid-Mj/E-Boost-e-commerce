@@ -46,8 +46,12 @@ export default function AppRoutes() {
           <Route path="/address" element={<Addaddress/>}/>
           <Route path="/payment" element={<Payment/>}/>
           <Route path="/orders" element={<ProtectedRoute><Orders/></ProtectedRoute>}/>
-          <Route path="/admin/*" element={<ProtectedRoute requiredRole="2"><AdminRoutes /></ProtectedRoute>} />
-        </Routes>
+          <Route path="/admin/*" element={
+          <ProtectedRoute requiredRole={2}>
+            <AdminRoutes />
+          </ProtectedRoute>
+        } />
+                </Routes>
       </Router>
       </AuthProvider>
     </CartProvider>
