@@ -12,13 +12,20 @@ export default function User() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && (user.roleId == 2 || user.role === "admin")) {
+    if (
+      user &&
+      (
+        user.roleId == 2 ||
+        user.role === "admin" ||
+        user.isAdmin === true
+      )
+    ) {
       navigate("/", { replace: true });
     }
   }, [user, navigate]);
 
     console.log(user)
-    
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">

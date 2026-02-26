@@ -3,7 +3,8 @@ import { useCart } from "../../contexts/Cartcontext";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { Link } from "react-router-dom";
-import { getProducts } from "../../api.js";
+// import { getProducts } from "../../api.js";
+import api from "../../config/api";
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, getTotalPrice, getTotalItems } = useCart();
@@ -13,7 +14,7 @@ export default function Cart() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await getProducts();
+        const response = await api.get("/products");
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);

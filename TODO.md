@@ -1,5 +1,7 @@
-- [x] Add "carts", "wishlists", "orders" arrays to db.json
-- [x] Remove unused custom middlewares from server.js (/users/:id/cart, /users/:id/orders, /users/:id/wishlist)
-- [x] Fix ProductDetail.jsx to use /api/products/${id} instead of localhost
-- [x] Add add to cart button to Productsview.jsx
-- [x] Test the buttons functionality (servers running, ready for manual testing)
+# Fix Admin Login Redirect Issue
+
+## Tasks:
+- [x] 1. Analyze the codebase to find role checking inconsistencies
+- [x] 2. Fix Login.jsx - Change `user.role === "admin"` to `user.roleId === 2`
+- [x] 3. Fix AppRoutes.jsx - Change `requiredRole={2}` to `role={2}` to match ProtectedRoute prop
+- [x] 4. Test the fixes

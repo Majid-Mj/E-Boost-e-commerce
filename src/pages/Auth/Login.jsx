@@ -279,13 +279,46 @@ const handleSubmit = async (e) => {
     });
 
     const meRes = await api.get("/auth/me");
-    const user = meRes.data.data;
+    console.log("Auth /me response:", meRes.data);
+
+    // pick the user object from whatever field the backend uses
+    let user = meRes.data.data || meRes.data.user || meRes.data;
+
+    // try to normalise a variety of role formats coming from .NET backends
+    if (user) {
+      if (user.roleId != null) {
+        user.roleId = Number(user.roleId);
+      } else if (Array.isArray(user.roles)) {
+        if (user.roles.includes("Admin") || user.roles.includes("admin")) {
+          user.roleId = 2;
+        }
+      } else if (user.role || user.roleName) {
+        const r = (user.role || user.roleName).toString().toLowerCase();
+        if (r === "admin" || r === "administrator") {
+          user.roleId = 2;
+        }
+      } else if (user.isAdmin === true) {
+        user.roleId = 2;
+      }
+
+      if (user.roleId == null || isNaN(Number(user.roleId))) {
+        user.roleId = 1;
+      }
+    }
+
+   console.log("User after normalisation:", user);
 
     setUser(user);
 
     toast.success("Login successful!");
 
-    if (user.role === "admin") {
+    // decide where to send them based on the normalized role
+    if (
+      user.roleId === 2 ||
+      user.role === "admin" ||
+      user.isAdmin === true ||
+      (Array.isArray(user.roles) && user.roles.includes("admin"))
+    ) {
       navigate("/admin");
     } else {
       navigate("/home");
