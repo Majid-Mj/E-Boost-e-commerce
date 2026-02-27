@@ -6,6 +6,7 @@ import UserList from "../pages/Admin/Users/UserList";
 import OrderReport from "../pages/Admin/Orders/OrderReport"
 import AdminRoute from "../Components/AdminRoute";
 import AddProduct from "../pages/Admin/Products/AddProduct";
+import EditProduct from "../pages/Admin/Products/EditProduct";
 
 
 export default function AdminRoutes() {
@@ -16,6 +17,7 @@ export default function AdminRoutes() {
 
         <Route path="products" element={<AdminRoute><ProductList /></AdminRoute>} />
         <Route path="products/add" element={<AdminRoute><AddProduct /></AdminRoute>} />
+        <Route path="products/edit/:id" element={<EditProduct />} />
 
         <Route path="users" element={<AdminRoute><UserList /></AdminRoute>} />
         <Route path="orders" element={<AdminRoute><OrderReport /></AdminRoute>} />

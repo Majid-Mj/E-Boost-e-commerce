@@ -161,11 +161,16 @@
 //   );
 // }
 
+
+
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../../config/api";
 import toast from "react-hot-toast";
 
 export default function ProductList() {
+  const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -183,22 +188,20 @@ export default function ProductList() {
 
   const [imageFiles, setImageFiles] = useState([]);
 
-  // 🔹 Fetch Products
-      const fetchProducts = async () => {
-        try {
-          const res = await api.get("/products/Admin");
-          const productList = res.data.data || [];
+  // 🔹 Fetch Products (Newest First)
+  const fetchProducts = async () => {
+    try {
+      const res = await api.get("/products/Admin");
+      const productList = res.data.data || [];
 
-          // 🔥 Sort by ID descending (newest first)
-          const sorted = productList.sort((a, b) => b.id - a.id);
-
-          setProducts(sorted);
-        } catch {
-          toast.error("Failed to load products");
-        } finally {
-          setLoading(false);
-        }
-      };
+      const sorted = productList.sort((a, b) => b.id - a.id);
+      setProducts(sorted);
+    } catch {
+      toast.error("Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 🔹 Fetch Categories
   const fetchCategories = async () => {
@@ -255,9 +258,7 @@ export default function ProductList() {
       });
 
       await api.post("/products", formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       toast.success("Product added successfully!");
@@ -275,7 +276,6 @@ export default function ProductList() {
 
       fetchProducts();
     } catch (error) {
-      console.error(error);
       toast.error(
         error?.response?.data?.message || "Failed to add product"
       );
@@ -284,21 +284,30 @@ export default function ProductList() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure?")) return;
+ // 🔥 Toggle Active / Inactive (Correct Version)
+const handleToggleStatus = async (productId) => {
+  try {
+    await api.patch(`/products/${productId}/toggle`);
 
-    try {
-      await api.delete(`/products/${id}`);
-      toast.success("Product deleted");
-      fetchProducts();
-    } catch {
-      toast.error("Delete failed");
-    }
-  };
+    // Instantly update UI without refetch
+    setProducts(prev =>
+      prev.map(p =>
+        p.id === productId
+          ? { ...p, isActive: !p.isActive }
+          : p
+      )
+    );
+
+    toast.success("Product status updated");
+  } catch (error) {
+    toast.error("Failed to update status");
+  }
+};
 
   return (
     <div className="p-6 bg-[#f7f6fb] min-h-screen">
 
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-[#333041]">
           Product List
@@ -321,132 +330,6 @@ export default function ProductList() {
         )}
       </div>
 
-      {/* 🔥 ADD PRODUCT FORM */}
-      {showAddForm && (
-        <div className="bg-white p-6 rounded-2xl shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4">
-            Add New Product
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-
-            <div className="grid grid-cols-2 gap-4">
-
-              <input
-                type="text"
-                name="name"
-                placeholder="Product Name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="border px-3 py-2 rounded-md"
-              />
-
-              <select
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-                required
-                className="border px-3 py-2 rounded-md"
-              >
-                <option value="">Category</option>
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-
-              <input
-                type="number"
-                name="price"
-                placeholder="Price"
-                value={formData.price}
-                onChange={handleChange}
-                required
-                className="border px-3 py-2 rounded-md"
-              />
-
-              <input
-                type="number"
-                name="stock"
-                placeholder="Stock Quantity"
-                value={formData.stock}
-                onChange={handleChange}
-                required
-                className="border px-3 py-2 rounded-md"
-              />
-
-            </div>
-
-            <textarea
-              name="description"
-              placeholder="Description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              className="border px-3 py-2 rounded-md w-full"
-            />
-
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="isFeatured"
-                checked={formData.isFeatured}
-                onChange={handleChange}
-              />
-              Featured Product
-            </label>
-
-            {/* 🔥 FILE INPUT */}
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              className="block w-full text-sm
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0
-                file:bg-[#413b55] file:text-white"
-            />
-
-            {/* 🔥 IMAGE PREVIEW */}
-            {imageFiles.length > 0 && (
-              <div className="flex flex-wrap gap-3 mt-4">
-                {imageFiles.map((file, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt="preview"
-                      className="w-20 h-20 object-cover rounded-lg border shadow-sm"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setImageFiles(imageFiles.filter((_, i) => i !== index))
-                      }
-                      className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="bg-[#413b55] text-white px-6 py-2 rounded-md"
-            >
-              {submitting ? "Adding..." : "Add Product"}
-            </button>
-
-          </form>
-        </div>
-      )}
-
       {/* 🔥 PRODUCT TABLE */}
       <div className="bg-white rounded-2xl shadow-md overflow-x-auto">
         {loading ? (
@@ -461,6 +344,7 @@ export default function ProductList() {
                 <th className="p-4">Category</th>
                 <th className="p-4">Price</th>
                 <th className="p-4">Stock</th>
+                <th className="p-4">Active</th>
                 <th className="p-4">Actions</th>
               </tr>
             </thead>
@@ -468,6 +352,7 @@ export default function ProductList() {
               {products.map(product => (
                 <tr key={product.id} className="border-t">
                   <td className="p-4">{product.id}</td>
+
                   <td className="p-4">
                     <img
                       src={
@@ -479,20 +364,44 @@ export default function ProductList() {
                       className="w-14 h-14 object-cover rounded border"
                     />
                   </td>
+
                   <td className="p-4 font-medium">{product.name}</td>
                   <td className="p-4">{product.categoryName}</td>
                   <td className="p-4 text-green-600 font-semibold">
                     ₹{product.price}
                   </td>
                   <td className="p-4">{product.stock}</td>
+
+                  {/* 🔥 Sliding Toggle */}
+                  <td className="p-4">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={product.isActive}
+                      onChange={() => handleToggleStatus(product.id)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-300 rounded-full peer 
+                      peer-checked:bg-green-500 
+                      after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                      after:bg-white after:border after:rounded-full after:h-5 after:w-5
+                      after:transition-all
+                      peer-checked:after:translate-x-full">
+                    </div>
+                  </label>
+                </td>
+
                   <td className="p-4">
                     <button
-                      onClick={() => handleDelete(product.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-md"
+                      onClick={() =>
+                        navigate(`/admin/products/edit/${product.id}`)
+                      }
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md"
                     >
-                      Delete
+                      Edit
                     </button>
                   </td>
+
                 </tr>
               ))}
             </tbody>
