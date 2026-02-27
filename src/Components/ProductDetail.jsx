@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import { useCart } from "../contexts/Cartcontext";
 import { Heart } from "lucide-react";
-import { API_BASE_URL } from "../api";
+import api from "../config/api";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -13,8 +12,8 @@ export default function ProductDetail() {
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist, wishlist } = useCart();
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/products/${id}`)
+    api
+      .get(`/products/${id}`)
       .then((res) => setProduct(res.data))
       .catch((err) => console.error(err));
   }, [id]);
@@ -46,7 +45,6 @@ export default function ProductDetail() {
               : product.description || "High-quality gaming accessory for pro gamers."}
           </p>
 
-          {/*Stock Display */}
           <p className={`mb-4 font-semibold ${isOutOfStock ? "text-red-500" : "text-green-400"}`}>
             {isOutOfStock
               ? "Out of Stock"
@@ -58,7 +56,6 @@ export default function ProductDetail() {
           </p>
 
           <div className="flex items-center gap-4 mb-6">
-      
             <button
               onClick={() => {
                 if (isInWishlist(product.id)) {
@@ -70,7 +67,8 @@ export default function ProductDetail() {
                     name: product.name,
                     price: product.price,
                     image: product.image,
-                    description: product.description || "High-quality gaming accessory for pro gamers.",
+                    description:
+                      product.description || "High-quality gaming accessory for pro gamers.",
                   });
                 }
               }}
@@ -78,15 +76,14 @@ export default function ProductDetail() {
             >
               <Heart
                 size={24}
-                className={`${
+                className={
                   isInWishlist(product.id)
                     ? "fill-red-500 text-red-500"
                     : "text-gray-400"
-                }`}
+                }
               />
             </button>
 
-            {/* Add to Cart Button */}
             <button
               onClick={() => !isOutOfStock && addToCart(product)}
               disabled={isOutOfStock}
@@ -99,7 +96,6 @@ export default function ProductDetail() {
               {isOutOfStock ? "Out of Stock" : "Add to Cart"}
             </button>
 
-            {/* Buy Now */}
             <Link to="/cart/address">
               <button
                 disabled={isOutOfStock}
