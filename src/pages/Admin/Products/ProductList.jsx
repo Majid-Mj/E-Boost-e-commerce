@@ -285,7 +285,7 @@ export default function ProductList() {
   };
 
  // 🔥 Toggle Active / Inactive (Correct Version)
-const handleToggleStatus = async (productId) => {
+    const handleToggleStatus = async (productId) => {
   try {
     await api.patch(`/products/${productId}/toggle`);
 
@@ -329,6 +329,122 @@ const handleToggleStatus = async (productId) => {
           </button>
         )}
       </div>
+
+      {/* 🔥 ADD PRODUCT FORM */}
+      {showAddForm && (
+        <div className="bg-white p-6 rounded-2xl shadow-md mb-6">
+          <h2 className="text-xl font-semibold text-[#333041] mb-4">
+            Add New Product
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Product Name */}
+              <input
+                type="text"
+                name="name"
+                placeholder="Product Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+
+              {/* Category */}
+              <select
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* Price */}
+              <input
+                type="number"
+                name="price"
+                placeholder="Price"
+                value={formData.price}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+
+              {/* Stock */}
+              <input
+                type="number"
+                name="stock"
+                placeholder="Stock Quantity"
+                value={formData.stock}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+
+            {/* Description */}
+            <textarea
+              name="description"
+              placeholder="Description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border rounded-md"
+            />
+
+            {/* Is Featured */}
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="isFeatured"
+                checked={formData.isFeatured}
+                onChange={handleChange}
+              />
+              Featured Product
+            </label>
+
+            {/* Image Files */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Product Images
+              </label>
+              <input
+                type="file"
+                name="imageFiles"
+                multiple
+                accept="image/*"
+                onChange={handleFileChange}
+                className="block w-full text-sm text-gray-700
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-md file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-[#413b55] file:text-white
+                  hover:file:bg-[#52486e]"
+              />
+              {imageFiles.length > 0 && (
+                <p className="text-sm text-gray-500 mt-2">
+                  {imageFiles.length} file(s) selected
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-[#413b55] text-white py-2 rounded-md hover:bg-[#52486e] transition"
+            >
+              {submitting ? "Adding..." : "Add Product"}
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* 🔥 PRODUCT TABLE */}
       <div className="bg-white rounded-2xl shadow-md overflow-x-auto">

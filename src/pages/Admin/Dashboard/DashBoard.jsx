@@ -386,12 +386,16 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         const [ordersRes, productsRes] = await Promise.all([
-          api.get("/Order/admin"),      // admin orders
-          api.get("/Product"),          // all products
+          api.get("/orders/admin"),   // admin orders
+          api.get("/products/admin")   // since you're admin 
         ]);
+        const orders = Array.isArray(ordersRes.data?.data)
+          ? ordersRes.data.data
+          : [];
 
-        const orders = ordersRes.data || [];
-        const products = productsRes.data || [];
+        const products = Array.isArray(productsRes.data?.data)
+          ? productsRes.data.data
+          : [];
 
         const totalRevenue = orders.reduce(
           (sum, order) => sum + (order.totalAmount || 0),
