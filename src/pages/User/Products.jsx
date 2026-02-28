@@ -13,7 +13,26 @@ export default function Products() {
   const [priceFilter, setPriceFilter] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const { addToCart } = useCart();
+  const { addToCart, wishlist, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
+
+  const toggleWishlist = (product) => {
+    if (isInWishlist(product.id)) {
+      const wishlistItem = wishlist.find(item => item.productId === product.id);
+      if (wishlistItem) {
+        removeFromWishlist(wishlistItem.id);
+      }
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0]?.imageUrl || "/assets/placeholder.jpg",
+        description:
+          product.description ||
+          "High-quality product for gamers and enthusiasts.",
+      });
+    }
+  };
 
   // 🔥 Fetch products from real backend
   useEffect(() => {
@@ -136,13 +155,29 @@ export default function Products() {
                 key={product.id}
                 className="bg-gray-800 p-3 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-[240px] relative overflow-hidden block"
               >
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleWishlist(product);
+                  }}
+                  className="absolute top-2 right-2 p-1.5 bg-gray-800/80 backdrop-blur-sm rounded-full hover:bg-gray-700 transition z-10"
+                >
+                  <Heart
+                    size={20}
+                    className={`${isInWishlist(product.id)
+                        ? "fill-red-500 text-red-500"
+                        : "text-gray-400"
+                      }`}
+                  />
+                </button>
+
                 <img
                   src={
                     product.images?.[0]?.imageUrl ||
                     "https://via.placeholder.com/200"
                   }
                   alt={product.name}
-                  className="w-full h-[160px] object-cover rounded-md mb-3"
+                  className="w-full h-[180px] object-fit rounded-md mb-3"
                 />
 
                 <h3 className="text-base font-medium mb-1 line-clamp-2">
@@ -168,11 +203,10 @@ export default function Products() {
                         addToCart(product);
                       }
                     }}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                      product.stock === 0
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${product.stock === 0
                         ? "bg-gray-600 cursor-not-allowed"
                         : "bg-[#FF9F00] hover:bg-[#e68900]"
-                    }`}
+                      }`}
                   >
                     {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
                   </button>
