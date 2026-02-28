@@ -297,27 +297,30 @@ export const CartProvider = ({ children }) => {
   const loadCart = async () => {
     try {
       const res = await api.get("/Cart");
-      setCart(res.data);
+      setCart(Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error(err);
+      console.error("Cart error:", err);
+      setCart([]);
     }
   };
 
   const loadWishlist = async () => {
     try {
       const res = await api.get("/Wishlist");
-      setWishlist(res.data);
+      setWishlist(Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error(err);
+      console.error("Wishlist error:", err);
+      setWishlist([]);
     }
   };
 
   const loadOrders = async () => {
     try {
       const res = await api.get("/Order/my-orders");
-      setOrders(res.data);
+      setOrders(Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error(err);
+      console.error("Orders error:", err);
+      setOrders([]);
     }
   };
 
@@ -390,9 +393,9 @@ export const CartProvider = ({ children }) => {
   };
 
   const isInWishlist = (productId) =>
-    wishlist.some((item) => item.productId === productId);
+    Array.isArray(wishlist) && wishlist.some((item) => item.productId === productId);
 
-  const getWishlistCount = () => wishlist.length;
+  const getWishlistCount = () => Array.isArray(wishlist) ? wishlist.length : 0;
 
   // ================= ORDERS =================
 

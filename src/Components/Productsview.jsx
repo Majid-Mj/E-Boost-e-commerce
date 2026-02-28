@@ -9,12 +9,17 @@ export default function ProductsView() {
   const [products, setProducts] = useState([]);
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist, wishlist } = useCart();
 
-useEffect(() => {
-  api
-    .get("/products")   // no need for full URL
-    .then((res) => setProducts(res.data))
-    .catch((err) => console.error("Error fetching products:", err));
-}, []);
+  // Fetch maximum of 4 products to display as "Featured"
+  useEffect(() => {
+    api
+      .get("/products/paged?page=1&pageSize=4")
+      .then((res) => {
+        // Handle standard response or ApiResponseFilter wrapped response
+        let fetchedProducts = res.data.data?.items || res.data?.items || [];
+        setProducts(fetchedProducts);
+      })
+      .catch((err) => console.error("Error fetching featured products:", err));
+  }, []);
 
   const calculateDiscount = (originalPrice, price) => {
     if (originalPrice > price) {
@@ -34,8 +39,8 @@ useEffect(() => {
       addToWishlist({
         id: product.id,
         name: product.name,
-        price: product.price, 
-        image: product.image,
+        price: product.price,
+        image: product.images?.[0]?.imageUrl || "/assets/placeholder.jpg",
         description:
           product.description ||
           "High-quality product for gamers and enthusiasts.",
@@ -49,10 +54,12 @@ useEffect(() => {
         Featured Products
       </h2>
 
-      <div className="flex flex-wrap justify-center gap-6"> 
+      <div className="flex flex-wrap justify-center gap-6">
         {products.length > 0 ? (
           products.map((product) => {
-            const discount = calculateDiscount(product.originalPrice, product.price);
+            const originalPrice = product.originalPrice || product.price; // Fallback if no original price is provided by DTO
+            const discount = calculateDiscount(originalPrice, product.price);
+            const displayImage = product.images?.[0]?.imageUrl || "/assets/placeholder.jpg";
             return (
               <Link
                 to={`/product-details/${product.id}`}
@@ -68,16 +75,15 @@ useEffect(() => {
                 >
                   <Heart
                     size={18}
-                    className={`${
-                      isInWishlist(product.id)
-                        ? "fill-red-500 text-red-500"
-                        : "text-gray-400"
-                    }`}
+                    className={`${isInWishlist(product.id)
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-400"
+                      }`}
                   />
                 </button>
 
                 <img
-                  src={product.image}
+                  src={displayImage}
                   alt={product.name}
                   className="w-full h-[160px] object-cover rounded-md mb-3"
                 />
@@ -90,9 +96,9 @@ useEffect(() => {
                   <p className="text-[#00FFFF] text-lg font-bold mr-2">
                     ₹{product.price.toFixed(2)}
                   </p>
-                  {product.originalPrice > product.price && (
+                  {originalPrice > product.price && (
                     <p className="text-gray-400 line-through text-xs">
-                      ₹{product.originalPrice}
+                      ₹{originalPrice}
                     </p>
                   )}
                 </div>
