@@ -25,6 +25,9 @@ export default function Sidebar({ isOpen, onClose }) {
 
     localStorage.removeItem("admin");
     localStorage.removeItem("isAdminLoggedIn");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
     navigate("/");
   };
 
@@ -43,10 +46,9 @@ export default function Sidebar({ isOpen, onClose }) {
               key={item.name}
               to={item.path}
               className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 
-                ${
-                  location.pathname === item.path
-                    ? "bg-purple-600 text-white"
-                    : "hover:bg-[#2a2543]"
+                ${location.pathname === item.path
+                  ? "bg-purple-600 text-white"
+                  : "hover:bg-[#2a2543]"
                 }`}
             >
               {item.icon}
@@ -66,18 +68,16 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
       </aside>
 
-    
+
       <div
-        className={`fixed inset-0 z-50 bg-black/40 md:hidden transition-opacity duration-300 ${
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
+        className={`fixed inset-0 z-50 bg-black/40 md:hidden transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+          }`}
         onClick={onClose}
       ></div>
 
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-[#1d1b2f] text-gray-200 flex flex-col shadow-2xl transform transition-transform duration-300 md:hidden z-50 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-64 bg-[#1d1b2f] text-gray-200 flex flex-col shadow-2xl transform transition-transform duration-300 md:hidden z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Mobile header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-700">
@@ -93,10 +93,9 @@ export default function Sidebar({ isOpen, onClose }) {
               to={item.path}
               onClick={onClose}
               className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 
-                ${
-                  location.pathname === item.path
-                    ? "bg-purple-600 text-white"
-                    : "hover:bg-[#2a2543]"
+                ${location.pathname === item.path
+                  ? "bg-purple-600 text-white"
+                  : "hover:bg-[#2a2543]"
                 }`}
             >
               {item.icon}
@@ -106,21 +105,24 @@ export default function Sidebar({ isOpen, onClose }) {
         </nav>
 
         <div className="p-4 border-t border-gray-700">
-        <button
-          onClick={() => {
-            const confirmed = window.confirm("Are you sure you want to logout?");
-            if (!confirmed) return;
-            localStorage.removeItem("admin");
-            localStorage.removeItem("isAdminLoggedIn");
+          <button
+            onClick={() => {
+              const confirmed = window.confirm("Are you sure you want to logout?");
+              if (!confirmed) return;
+              localStorage.removeItem("admin");
+              localStorage.removeItem("isAdminLoggedIn");
+              localStorage.removeItem("token");
+              localStorage.removeItem("refreshToken");
+              localStorage.removeItem("user");
 
-            onClose();
-            navigate("/login");
-          }}
-          className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
-        >
-          <LogOut size={18} />
-          Logout
-        </button>
+              onClose();
+              navigate("/");
+            }}
+            className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
+          >
+            <LogOut size={18} />
+            Logout
+          </button>
         </div>
       </div>
     </>

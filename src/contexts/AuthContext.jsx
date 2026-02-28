@@ -53,13 +53,21 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = async () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("admin");
+    localStorage.removeItem("isAdminLoggedIn");
+    localStorage.removeItem("user");
+
+    setUser(null);
+
     try {
-      await api.post("/auth/logout");
+      api.post("/auth/logout").catch((err) => {
+        console.log("Logout backend error:", err);
+      });
     } catch (err) {
       console.log("Logout error:", err);
     }
-
-    setUser(null);
   };
 
   return (

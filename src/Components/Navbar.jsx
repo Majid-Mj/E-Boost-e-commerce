@@ -14,7 +14,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-[#141414] text-gray-200 py-3 px-6 md:px-8 flex items-center justify-between shadow-md fixed top-0 left-0 right-0 z-50">
-      
+
       {/* Left: Logo */}
       <div className="text-2xl font-semibold tracking-wide">
         <Link

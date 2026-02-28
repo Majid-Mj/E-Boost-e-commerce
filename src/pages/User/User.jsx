@@ -20,11 +20,11 @@ export default function User() {
         user.isAdmin === true
       )
     ) {
-      navigate("/", { replace: true });
+      navigate("/admin", { replace: true });
     }
   }, [user, navigate]);
 
-    console.log(user)
+  console.log(user)
 
   if (!user) {
     return (

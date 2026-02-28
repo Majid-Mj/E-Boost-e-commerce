@@ -196,7 +196,7 @@
 //             onClick={() => navigate("/forgot-password")}
 //             className="text-cyan-400 hover:underline cursor-pointer block mb-2"
 //           >
-           
+
 //           </span>
 //           Don’t have an account?{" "}
 //           <span
@@ -262,77 +262,84 @@ export default function Login() {
     return newErrors;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const validationErrors = validate();
-  setErrors(validationErrors);
+    const validationErrors = validate();
+    setErrors(validationErrors);
 
-  if (Object.keys(validationErrors).length > 0) return;
+    if (Object.keys(validationErrors).length > 0) return;
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    await api.post("/auth/login", {
-      email: formData.email,
-      password: formData.password
-    });
+    try {
+      const loginRes = await api.post("/auth/login", {
+        email: formData.email,
+        password: formData.password
+      });
 
-    const meRes = await api.get("/auth/me");
-    console.log("Auth /me response:", meRes.data);
-
-    // pick the user object from whatever field the backend uses
-    let user = meRes.data.data || meRes.data.user || meRes.data;
-
-    // try to normalise a variety of role formats coming from .NET backends
-    if (user) {
-      if (user.roleId != null) {
-        user.roleId = Number(user.roleId);
-      } else if (Array.isArray(user.roles)) {
-        if (user.roles.includes("Admin") || user.roles.includes("admin")) {
-          user.roleId = 2;
-        }
-      } else if (user.role || user.roleName) {
-        const r = (user.role || user.roleName).toString().toLowerCase();
-        if (r === "admin" || r === "administrator") {
-          user.roleId = 2;
-        }
-      } else if (user.isAdmin === true) {
-        user.roleId = 2;
+      if (loginRes.data?.accessToken) {
+        localStorage.setItem("token", loginRes.data.accessToken);
+      }
+      if (loginRes.data?.refreshToken) {
+        localStorage.setItem("refreshToken", loginRes.data.refreshToken);
       }
 
-      if (user.roleId == null || isNaN(Number(user.roleId))) {
-        user.roleId = 1;
+      const meRes = await api.get("/auth/me");
+      console.log("Auth /me response:", meRes.data);
+
+      // pick the user object from whatever field the backend uses
+      let user = meRes.data.data || meRes.data.user || meRes.data;
+
+      // try to normalise a variety of role formats coming from .NET backends
+      if (user) {
+        if (user.roleId != null) {
+          user.roleId = Number(user.roleId);
+        } else if (Array.isArray(user.roles)) {
+          if (user.roles.includes("Admin") || user.roles.includes("admin")) {
+            user.roleId = 2;
+          }
+        } else if (user.role || user.roleName) {
+          const r = (user.role || user.roleName).toString().toLowerCase();
+          if (r === "admin" || r === "administrator") {
+            user.roleId = 2;
+          }
+        } else if (user.isAdmin === true) {
+          user.roleId = 2;
+        }
+
+        if (user.roleId == null || isNaN(Number(user.roleId))) {
+          user.roleId = 1;
+        }
       }
+
+      console.log("User after normalisation:", user);
+
+      setUser(user);
+
+      toast.success("Login successful!");
+
+      // decide where to send them based on the normalized role
+      if (
+        user.roleId === 2 ||
+        user.role === "admin" ||
+        user.isAdmin === true ||
+        (Array.isArray(user.roles) && user.roles.includes("admin"))
+      ) {
+        navigate("/admin");
+      } else {
+        navigate("/home");
+      }
+
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+        "Invalid email or password"
+      );
+    } finally {
+      setLoading(false);
     }
-
-   console.log("User after normalisation:", user);
-
-    setUser(user);
-
-    toast.success("Login successful!");
-
-    // decide where to send them based on the normalized role
-    if (
-      user.roleId === 2 ||
-      user.role === "admin" ||
-      user.isAdmin === true ||
-      (Array.isArray(user.roles) && user.roles.includes("admin"))
-    ) {
-      navigate("/admin");
-    } else {
-      navigate("/home");
-    }
-
-  } catch (error) {
-    toast.error(
-      error?.response?.data?.message ||
-      "Invalid email or password"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
