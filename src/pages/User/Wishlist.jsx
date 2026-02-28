@@ -160,34 +160,16 @@ import { Link } from "react-router-dom";
 import api from "../../config/api";
 import { useCart } from "../../contexts/Cartcontext";
 
+import { AuthContext } from "../../contexts/AuthContext";
+
 export default function Wishlist() {
-  const [wishlist, setWishlist] = useState([]);
-  const { addToCart } = useCart();
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const { wishlist, removeFromWishlist, addToCart } = useCart();
+  const { user } = useContext(AuthContext);
+  const isLoggedIn = !!user;
 
-  // 🔥 Fetch wishlist from backend
-  useEffect(() => {
-    if (!isLoggedIn) return;
-
-    const fetchWishlist = async () => {
-      try {
-        const res = await api.get("/wishlist");
-        setWishlist(res.data);
-      } catch (error) {
-        console.error("Error fetching wishlist:", error);
-      }
-    };
-
-    fetchWishlist();
-  }, [isLoggedIn]);
-
-  // 🔥 Remove from wishlist (backend)
   const handleRemove = async (productId) => {
     try {
-      await api.delete(`/wishlist/${productId}`);
-      setWishlist((prev) =>
-        prev.filter((item) => item.productId !== productId)
-      );
+      await removeFromWishlist(productId);
     } catch (error) {
       console.error("Error removing item:", error);
     }
@@ -252,8 +234,8 @@ export default function Wishlist() {
                   {/* Image */}
                   <div className="w-28 h-28 flex-shrink-0">
                     <img
-                      src={item.image}
-                      alt={item.productName}
+                      src={item.imageUrl || item.image || "/assets/placeholder.jpg"}
+                      alt={item.productName || item.name}
                       className="w-full h-full object-cover rounded-md"
                     />
                   </div>

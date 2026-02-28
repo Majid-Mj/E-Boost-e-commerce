@@ -272,6 +272,8 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import api from "../config/api";
 
+import { AuthContext } from "./AuthContext";
+
 const CartContext = createContext();
 
 export const useCart = () => {
@@ -283,21 +285,38 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
+  const { user } = useContext(AuthContext);
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [orders, setOrders] = useState([]);
 
   // ================= LOAD INITIAL DATA =================
   useEffect(() => {
-    loadCart();
-    loadWishlist();
-    loadOrders();
-  }, []);
+    if (user) {
+      loadCart();
+      loadWishlist();
+      loadOrders();
+    } else {
+      setCart([]);
+      setWishlist([]);
+      setOrders([]);
+    }
+  }, [user]);
 
   const loadCart = async () => {
     try {
       const res = await api.get("/Cart");
-      setCart(Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : []);
+      let cartItems = [];
+      if (res.data?.data?.items) {
+        cartItems = res.data.data.items;
+      } else if (res.data?.items) {
+        cartItems = res.data.items;
+      } else if (Array.isArray(res.data?.data)) {
+        cartItems = res.data.data;
+      } else if (Array.isArray(res.data)) {
+        cartItems = res.data;
+      }
+      setCart(cartItems);
     } catch (err) {
       console.error("Cart error:", err);
       setCart([]);
@@ -307,7 +326,18 @@ export const CartProvider = ({ children }) => {
   const loadWishlist = async () => {
     try {
       const res = await api.get("/Wishlist");
-      setWishlist(Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : []);
+      // The backend returns ApiResponse<WishlistDto> -> { data: { wishlistId, items: [] } }
+      let wishlistItems = [];
+      if (res.data?.data?.items) {
+        wishlistItems = res.data.data.items;
+      } else if (res.data?.items) {
+        wishlistItems = res.data.items;
+      } else if (Array.isArray(res.data?.data)) {
+        wishlistItems = res.data.data;
+      } else if (Array.isArray(res.data)) {
+        wishlistItems = res.data;
+      }
+      setWishlist(wishlistItems);
     } catch (err) {
       console.error("Wishlist error:", err);
       setWishlist([]);
@@ -384,6 +414,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromWishlist = async (productId) => {
     try {
+      // The backend expects the `productId` to remove
       await api.delete(`/Wishlist/${productId}`);
       toast.error("Removed from wishlist");
       loadWishlist();

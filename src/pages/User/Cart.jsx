@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useCart } from "../../contexts/Cartcontext";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
@@ -6,26 +6,31 @@ import { Link } from "react-router-dom";
 // import { getProducts } from "../../api.js";
 import api from "../../config/api";
 
+import { AuthContext } from "../../contexts/AuthContext";
+
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, getTotalPrice, getTotalItems } = useCart();
   const [products, setProducts] = useState([]);
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const { user } = useContext(AuthContext);
+  const isLoggedIn = !!user;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await api.get("/products");
-        setProducts(response.data);
+        let productsArray = [];
+        if (Array.isArray(response.data?.data)) {
+          productsArray = response.data.data;
+        } else if (Array.isArray(response.data)) {
+          productsArray = response.data;
+        }
+        setProducts(productsArray);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
     fetchProducts();
   }, []);
-
-  const cartProducts = products.filter((product) =>
-    cart.some((item) => item.productId === product.id)
-  );
 
   //Check if any item exceeds stock
   const isStockInsufficient = cart.some((item) => {
@@ -78,70 +83,61 @@ export default function Cart() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-4">
-                {cartProducts.map((product) => {
-                  const cartItem = cart.find((item) => item.productId === product.id);
-                  const isOutOfStock = product.stock <= 0;
-                  const isMaxReached = cartItem.quantity >= product.stock;
+                {cart.map((cartItem) => {
+                  const product = products.find((p) => p.id === cartItem.productId);
+                  const isMaxReached = product ? cartItem.quantity >= product.stock : false;
 
                   return (
                     <div
-                      key={product.id}
-                      className="bg-gray-800 p-4 rounded-lg shadow-lg flex items-center gap-4"
+                      key={cartItem.productId}
+                      className="bg-gray-800 p-4 rounded-lg shadow-lg flex items-center justify-between"
                     >
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-24 h-24 object-cover rounded-md"
-                      />
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
-                        <p className="text-gray-400 text-sm mb-2">{product.description}</p>
-                        <p className="text-[#00FFFF] text-lg font-bold">
-                          ₹{product.price.toFixed(2)}
-                        </p>
-
-                        {/*Show available stock */}
-                        <p
-                          className={`text-sm mt-1 ${
-                            product.stock > 0 ? "text-gray-400" : "text-red-400"
-                          }`}
-                        >
-                          {product.stock > 0
-                            ? `In Stock: ${product.stock}`
-                            : "Out of Stock"}
-                        </p>
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={cartItem.imageUrl || "/assets/placeholder.jpg"}
+                          alt={cartItem.productName}
+                          className="w-20 h-20 object-contain rounded-md bg-transparent"
+                        />
+                        <div>
+                          <h3 className="text-md font-semibold mb-1 max-w-xs">{cartItem.productName}</h3>
+                          <p className="text-[#00FFFF] text-md font-bold">
+                            ₹{(cartItem.price || 0).toFixed(2)}
+                          </p>
+                          <p className="text-gray-400 text-xs mt-1">
+                            {product ? `In Stock: ${product.stock}` : "Checking stock..."}
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => updateQuantity(cartItem.id, cartItem.quantity - 1)}
-                            className="bg-gray-600 text-white w-8 h-8 rounded-full hover:bg-gray-500 flex items-center justify-center"
+                            onClick={() => updateQuantity(cartItem.productId, cartItem.quantity - 1)}
+                            className="bg-gray-600 text-white w-8 h-8 rounded-full hover:bg-gray-500 flex items-center justify-center font-bold"
                             disabled={cartItem.quantity <= 1}
                           >
                             -
                           </button>
-                          <span className="text-white w-8 text-center">
+                          <span className="text-white w-6 text-center font-semibold">
                             {cartItem.quantity}
                           </span>
                           <button
                             onClick={() =>
                               !isMaxReached &&
-                              updateQuantity(cartItem.id, cartItem.quantity + 1)
+                              updateQuantity(cartItem.productId, cartItem.quantity + 1)
                             }
                             disabled={isMaxReached}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              isMaxReached
-                                ? "bg-gray-700 cursor-not-allowed"
-                                : "bg-gray-600 hover:bg-gray-500"
-                            }`}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${isMaxReached
+                              ? "bg-gray-700 cursor-not-allowed text-gray-500"
+                              : "bg-gray-600 hover:bg-gray-500 text-white"
+                              }`}
                           >
                             +
                           </button>
                         </div>
                         <button
-                          onClick={() => removeFromCart(cartItem.id)}
-                          className="text-red-500 hover:text-red-400 ml-4"
+                          onClick={() => removeFromCart(cartItem.productId)}
+                          className="text-red-500 hover:text-red-400 font-semibold"
                         >
                           Remove
                         </button>
@@ -151,7 +147,7 @@ export default function Cart() {
                 })}
               </div>
 
-             
+
               <div className="bg-gray-800 p-6 rounded-lg shadow-lg h-fit">
                 <h3 className="text-xl font-semibold mb-4 text-[#00FFFF]">Price Details</h3>
                 <div className="space-y-2 mb-4">
@@ -173,11 +169,10 @@ export default function Cart() {
                 <Link to={isStockInsufficient ? "#" : "address"}>
                   <button
                     disabled={isStockInsufficient}
-                    className={`w-full py-3 rounded-lg font-semibold transition ${
-                      isStockInsufficient
-                        ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-                        : "bg-[#00FFFF] text-black hover:bg-cyan-400"
-                    }`}
+                    className={`w-full py-3 rounded-lg font-semibold transition ${isStockInsufficient
+                      ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                      : "bg-[#00FFFF] text-black hover:bg-cyan-400"
+                      }`}
                   >
                     {isStockInsufficient ? "Check Stock" : "Place Order"}
                   </button>

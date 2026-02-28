@@ -33,7 +33,7 @@ export default function ProductsView() {
     if (isInWishlist(product.id)) {
       const wishlistItem = wishlist.find(item => item.productId === product.id);
       if (wishlistItem) {
-        removeFromWishlist(wishlistItem.id);
+        removeFromWishlist(wishlistItem.productId);
       }
     } else {
       addToWishlist({

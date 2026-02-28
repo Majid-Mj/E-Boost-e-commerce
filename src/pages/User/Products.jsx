@@ -19,7 +19,7 @@ export default function Products() {
     if (isInWishlist(product.id)) {
       const wishlistItem = wishlist.find(item => item.productId === product.id);
       if (wishlistItem) {
-        removeFromWishlist(wishlistItem.id);
+        removeFromWishlist(wishlistItem.productId);
       }
     } else {
       addToWishlist({
@@ -165,8 +165,8 @@ export default function Products() {
                   <Heart
                     size={20}
                     className={`${isInWishlist(product.id)
-                        ? "fill-red-500 text-red-500"
-                        : "text-gray-400"
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-400"
                       }`}
                   />
                 </button>
@@ -204,8 +204,8 @@ export default function Products() {
                       }
                     }}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition ${product.stock === 0
-                        ? "bg-gray-600 cursor-not-allowed"
-                        : "bg-[#FF9F00] hover:bg-[#e68900]"
+                      ? "bg-gray-600 cursor-not-allowed"
+                      : "bg-[#FF9F00] hover:bg-[#e68900]"
                       }`}
                   >
                     {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
