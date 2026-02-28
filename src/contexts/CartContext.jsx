@@ -378,10 +378,11 @@ export const CartProvider = ({ children }) => {
 
   const updateQuantity = async (productId, quantity) => {
     try {
-      await api.put("/Cart/update", {
-        productId,
-        quantity,
-      });
+      const formData = new FormData();
+      formData.append("productId", productId);
+      formData.append("quantity", quantity);
+
+      await api.put("/Cart/update", formData);
       loadCart();
     } catch (err) {
       toast.error("Failed to update quantity");
@@ -432,7 +433,11 @@ export const CartProvider = ({ children }) => {
 
   const placeOrderFromCart = async (addressData) => {
     try {
-      await api.post("/Order/add-from-cart", addressData);
+      const formData = new FormData();
+      if (addressData?.addressId) formData.append("AddressId", addressData.addressId);
+      if (addressData?.paymentMethod) formData.append("PaymentMethod", addressData.paymentMethod);
+
+      await api.post("/Order/add-from-cart", formData);
       toast.success("Order placed successfully");
       loadCart();
       loadOrders();
@@ -445,10 +450,13 @@ export const CartProvider = ({ children }) => {
 
   const buyNow = async (productId, addressData) => {
     try {
-      await api.post("/Order/buy-now", {
-        productId,
-        ...addressData,
-      });
+      const formData = new FormData();
+      formData.append("ProductId", productId);
+      if (addressData?.quantity) formData.append("Quantity", addressData.quantity);
+      if (addressData?.addressId) formData.append("AddressId", addressData.addressId);
+      if (addressData?.paymentMethod) formData.append("PaymentMethod", addressData.paymentMethod);
+
+      await api.post("/Order/buy-now", formData);
       toast.success("Order placed successfully");
       loadOrders();
       return true;

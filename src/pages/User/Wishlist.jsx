@@ -152,7 +152,7 @@
 
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { Trash2, ShoppingCart } from "lucide-react";
@@ -225,49 +225,49 @@ export default function Wishlist() {
               My Wishlist ({wishlist.length})
             </h1>
 
-            <div className="divide-y divide-gray-700">
+            <div className="divide-y divide-gray-700/50">
               {wishlist.map((item) => (
                 <div
                   key={item.productId}
-                  className="flex items-center justify-between py-5 gap-4 hover:bg-[#1a1a1a]/60 rounded-lg transition-all"
+                  className="flex items-center justify-between py-6 gap-6 hover:bg-gray-800/30 transition-all rounded-md px-2"
                 >
-                  {/* Image */}
-                  <div className="w-28 h-28 flex-shrink-0">
-                    <img
-                      src={item.imageUrl || item.image || "/assets/placeholder.jpg"}
-                      alt={item.productName || item.name}
-                      className="w-full h-full object-cover rounded-md"
-                    />
-                  </div>
+                  {/* Left Side: Image & Text */}
+                  <div className="flex items-center gap-6">
+                    <div className="w-24 h-24 flex-shrink-0 bg-transparent flex items-center justify-center">
+                      <img
+                        src={item.imageUrl || item.image || "/assets/placeholder.jpg"}
+                        alt={item.productName || item.name}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
 
-                  {/* Product Info */}
-                  <div className="flex-1 text-left">
-                    <h3 className="text-lg font-semibold text-white">
-                      {item.productName}
-                    </h3>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-[#00FFFF] text-xl font-bold">
-                        ₹{item.price}
-                      </span>
+                    <div className="flex-1 text-left">
+                      <h3 className="text-lg font-bold text-gray-200">
+                        {item.productName}
+                      </h3>
+                      <div className="mt-1">
+                        <span className="text-[#00FFFF] text-lg font-bold">
+                          ₹{item.price}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
+                  {/* Right Side: Actions */}
                   <div className="flex flex-col items-center gap-3">
                     <button
                       onClick={() => addToCart(item)}
-                      className="flex items-center gap-2 bg-[#00FFFF] text-black px-3 py-2 rounded-md font-semibold hover:bg-cyan-400 transition"
+                      className="flex items-center justify-center gap-2 bg-[#00FFFF] text-black px-4 py-2 rounded-md font-semibold hover:bg-cyan-400 transition"
                     >
                       <ShoppingCart size={16} /> Add
                     </button>
 
                     <button
                       onClick={() => handleRemove(item.productId)}
-                      className="text-gray-400 hover:text-red-500 transition"
+                      className="text-gray-400 hover:text-red-500 transition mt-1"
                       title="Remove from Wishlist"
                     >
-                      <Trash2 size={20} />
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 </div>
