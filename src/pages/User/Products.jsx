@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Heart, Search } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { useCart } from "../../contexts/Cartcontext";
@@ -12,6 +12,7 @@ export default function Products() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const { addToCart, wishlist, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
 
@@ -180,11 +181,11 @@ export default function Products() {
                   className="w-full h-[180px] object-fit rounded-md mb-3"
                 />
 
-                <h3 className="text-base font-medium mb-1 line-clamp-2">
+                <h3 className="text-base font-medium mb-1 line-clamp-2 min-h-[48px]">
                   {product.name}
                 </h3>
 
-                <p className="text-sm text-gray-300 mb-2 line-clamp-2">
+                <p className="text-sm text-gray-300 mb-2 line-clamp-2 min-h-[40px]">
                   {product.categoryName || "Uncategorized"}
                 </p>
 
@@ -194,7 +195,7 @@ export default function Products() {
                   </p>
                 </div>
 
-                <div className="flex justify-center">
+                <div className="flex justify-between gap-2 mt-auto">
                   <button
                     disabled={product.stock === 0}
                     onClick={(e) => {
@@ -203,12 +204,29 @@ export default function Products() {
                         addToCart(product);
                       }
                     }}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${product.stock === 0
+                    className={`flex-1 py-2 rounded-md text-sm font-medium transition ${product.stock === 0
                       ? "bg-gray-600 cursor-not-allowed"
                       : "bg-[#FF9F00] hover:bg-[#e68900]"
                       }`}
                   >
                     {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                  </button>
+
+                  <button
+                    disabled={product.stock === 0}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (product.stock > 0) {
+                        // Pass the product in state so the address/checkout page knows what is being bought immediately
+                        navigate("/cart/address", { state: { buyNowProduct: [product] } });
+                      }
+                    }}
+                    className={`flex-1 py-2 rounded-md text-sm font-medium transition ${product.stock === 0
+                      ? "bg-gray-600 cursor-not-allowed"
+                      : "bg-[#FB641B] hover:bg-[#e05a18]"
+                      }`}
+                  >
+                    Buy Now
                   </button>
                 </div>
               </Link>

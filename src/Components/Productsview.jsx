@@ -88,11 +88,11 @@ export default function ProductsView() {
                   className="w-full h-[160px] object-cover rounded-md mb-3"
                 />
 
-                <h3 className="text-base font-medium mb-1 line-clamp-2">
+                <h3 className="text-base font-medium mb-1 line-clamp-2 min-h-[48px]">
                   {product.name}
                 </h3>
 
-                <div className="flex items-center mb-3">
+                <div className="flex items-center mb-3 min-h-[28px]">
                   <p className="text-[#00FFFF] text-lg font-bold mr-2">
                     ₹{product.price.toFixed(2)}
                   </p>
