@@ -99,13 +99,13 @@ export default function Payment() {
                   </h2>
 
                   {address.fullName ? (
-                    <div className="bg-[#2a243a] p-4 rounded-xl border border-gray-600">
+                    <div className="bg-[#2a243a] p-3 rounded-lg border border-gray-600">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-medium text-white">{address.fullName}</h3>
-                          <p className="text-gray-400 mt-1">{address.street}, {address.city}</p>
-                          <p className="text-gray-400">{address.state}, {address.zip}, {address.country}</p>
-                          <p className="text-gray-400 mt-2 font-medium">Phone: {address.phone}</p>
+                          <h3 className="font-medium text-white text-sm">{address.fullName}</h3>
+                          <p className="text-gray-400 text-sm mt-1">{address.street}, {address.city}</p>
+                          <p className="text-gray-400 text-sm">{address.state}, {address.zip}, {address.country}</p>
+                          <p className="text-gray-400 mt-1 font-medium text-sm">Phone: {address.phone}</p>
                         </div>
                         <button
                           type="button"
@@ -136,32 +136,32 @@ export default function Payment() {
                     2. Payment Method
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {/* Card Option */}
-                    <label className={`cursor-pointer border-2 rounded-xl p-5 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${paymentMethod === 'card' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_15px_rgba(0,255,255,0.2)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
+                    <label className={`cursor-pointer border rounded-lg p-3 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'card' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_10px_rgba(0,255,255,0.15)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
                       <input type="radio" className="hidden" name="method" value="card" checked={paymentMethod === 'card'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-4 rounded-full transition-colors ${paymentMethod === 'card' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
-                        <CreditCard size={28} />
+                      <div className={`p-2 rounded-full transition-colors ${paymentMethod === 'card' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
+                        <CreditCard size={20} />
                       </div>
-                      <span className="font-medium text-center text-gray-200">Credit / Debit</span>
+                      <span className="font-medium text-center text-sm text-gray-200">Credit / Debit</span>
                     </label>
 
                     {/* UPI Option */}
-                    <label className={`cursor-pointer border-2 rounded-xl p-5 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${paymentMethod === 'upi' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_15px_rgba(0,255,255,0.2)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
+                    <label className={`cursor-pointer border rounded-lg p-3 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'upi' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_10px_rgba(0,255,255,0.15)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
                       <input type="radio" className="hidden" name="method" value="upi" checked={paymentMethod === 'upi'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-4 rounded-full transition-colors ${paymentMethod === 'upi' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
-                        <Smartphone size={28} />
+                      <div className={`p-2 rounded-full transition-colors ${paymentMethod === 'upi' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
+                        <Smartphone size={20} />
                       </div>
-                      <span className="font-medium text-center text-gray-200">UPI App</span>
+                      <span className="font-medium text-center text-sm text-gray-200">UPI App</span>
                     </label>
 
                     {/* COD Option */}
-                    <label className={`cursor-pointer border-2 rounded-xl p-5 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${paymentMethod === 'cod' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_15px_rgba(0,255,255,0.2)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
+                    <label className={`cursor-pointer border rounded-lg p-3 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'cod' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_10px_rgba(0,255,255,0.15)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
                       <input type="radio" className="hidden" name="method" value="cod" checked={paymentMethod === 'cod'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-4 rounded-full transition-colors ${paymentMethod === 'cod' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
-                        <Banknote size={28} />
+                      <div className={`p-2 rounded-full transition-colors ${paymentMethod === 'cod' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
+                        <Banknote size={20} />
                       </div>
-                      <span className="font-medium text-center text-gray-200">Cash on Delivery</span>
+                      <span className="font-medium text-center text-sm text-gray-200">Cash on Delivery</span>
                     </label>
                   </div>
 
@@ -253,7 +253,7 @@ export default function Payment() {
                   type="submit"
                   form="payment-form" // Triggers the form in the other column
                   disabled={!address.fullName || totalItems === 0}
-                  className="w-full bg-[#00FFFF] text-black py-4 rounded-xl font-bold text-lg hover:bg-cyan-400 transition shadow-[0_4px_14px_rgba(0,255,255,0.25)] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-emerald-500 text-black py-4 rounded-xl font-bold text-lg hover:bg-emerald-400 transition shadow-[0_4px_14px_rgba(16,185,129,0.25)] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Pay ₹{totalPrice.toFixed(2)}
                 </button>

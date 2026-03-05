@@ -1,228 +1,9 @@
-// import React, { useEffect, useState } from "react";
-// import Navbar from "../../Components/Navbar";
-// import Footer from "../../Components/Footer";
-// import axios from "axios";
-// import toast from "react-hot-toast";
-
-// export default function Orders() {
-//   const [orders, setOrders] = useState([]);
-//   const user = JSON.parse(localStorage.getItem("loggedInUser"));
-//   const isLoggedIn = localStorage.getItem("isLoggedIn");
-
-//   // Fetch user orders
-//   const fetchOrders = async () => {
-//     try {
-//       if (!user?.id) return;
-//       const res = await axios.get(`http://localhost:4444/users/${user.id}`);
-//       setOrders(res.data.orders || []);
-//     } catch (err) {
-//       console.error("Error fetching orders:", err);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchOrders();
-//   }, []);
-
-//   // Cancel order
-//   const handleCancelOrder = async (orderId) => {
-//     try {
-//       const updatedOrders = orders.map((o) =>
-//         o.date === orderId ? { ...o, status: "Cancelled" } : o
-//       );
-
-//       await axios.patch(`http://localhost:4444/users/${user.id}`, {
-//         orders: updatedOrders,
-//       });
-
-//       setOrders(updatedOrders);
-//       toast.success("Order cancelled successfully!", {
-//         position: "bottom-left",
-//         style: {
-//           background: "#1f1b2e",
-//           color: "#00FFFF",
-//           fontWeight: "bold",
-//           borderRadius: "10px",
-//           padding: "12px 20px",
-//         },
-//       });
-//     } catch (err) {
-//       console.error("Cancel error:", err);
-//       toast.error("Failed to cancel order");
-//     }
-//   };
-
-//   // Step progress
-//   const getStepStatus = (currentStatus) => {
-//     const steps = ["Ordered", "Packed", "Shipped", "Delivered"];
-//     const currentIndex = steps.findIndex(
-//       (s) => s.toLowerCase() === currentStatus?.toLowerCase()
-//     );
-//     return steps.map((label, index) => ({
-//       label,
-//       completed: index <= currentIndex,
-//     }));
-//   };
-
-//   if (!isLoggedIn)
-//     return (
-//       <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
-//         <h2 className="text-3xl text-[#00FFFF] mb-4">Access Denied</h2>
-//         <p>Please login to view your orders.</p>
-//         <a
-//           href="/login"
-//           className="mt-6 bg-[#00FFFF] px-6 py-2 rounded font-semibold text-black"
-//         >
-//           Login
-//         </a>
-//       </div>
-//     );
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
-//       <Navbar />
-//       <div className="pt-24 px-6 pb-12 max-w-6xl mx-auto">
-//         <h2 className="text-3xl font-bold text-center text-[#00FFFF] mb-10">
-//           My Orders
-//         </h2>
-
-//         {orders.length === 0 ? (
-//           <p className="text-center text-gray-400">No orders found.</p>
-//         ) : (
-//           orders.map((order, idx) => (
-//             <div
-//               key={idx}
-//               className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg mb-8 p-6 hover:shadow-cyan-500/20 transition"
-//             >
-//               <div className="flex justify-between items-center mb-5">
-//                 <h3 className="text-xl font-semibold text-[#00FFFF]">
-//                   Order #{idx + 1}
-//                 </h3>
-//                 <p className="text-gray-400">
-//                   {new Date(order.date).toLocaleDateString()}
-//                 </p>
-//               </div>
-
-//               <div className="space-y-4">
-//                 {order.items.map((item) => (
-//                   <div
-//                     key={item.id}
-//                     className="flex items-center gap-4 border-b border-gray-700 pb-3"
-//                   >
-//                     <img
-//                       src={item.product.image}
-//                       alt={item.product.name}
-//                       className="w-16 h-16 object-cover rounded-md"
-//                     />
-//                     <div className="flex-1">
-//                       <h4 className="font-semibold text-lg">
-//                         {item.product.name}
-//                       </h4>
-//                       <p className="text-gray-400 text-sm">
-//                         Qty: {item.quantity}
-//                       </p>
-//                       <p className="text-[#00FFFF] font-bold">
-//                         ₹{item.product.price} × {item.quantity}
-//                       </p>
-//                     </div>
-//                     <p className="text-white font-semibold">
-//                       ₹{(item.product.price * item.quantity).toFixed(2)}
-//                     </p>
-//                   </div>
-//                 ))}
-//               </div>
-
-            
-//               <div className="mt-6">
-//                 <p className="text-sm text-gray-400 mb-3">Order Tracking</p>
-//                 <div className="relative flex justify-between items-center w-full px-2 sm:px-6">
-//                   {getStepStatus(order.status).map((step, i, arr) => {
-//                     const nextCompleted =
-//                       arr[i + 1] && arr[i + 1].completed;
-//                     return (
-//                       <div
-//                         key={i}
-//                         className="flex flex-col items-center relative w-full"
-//                       >
-                        
-//                         {i !== 0 && (
-//                           <div
-//                             className={`absolute top-[12px] left-[-50%] h-[3px] w-full transition-all duration-500 ${
-//                               step.completed ? "bg-green-500" : "bg-gray-600"
-//                             }`}
-//                           ></div>
-//                         )}
-
-//                         <div
-//                           className={`w-6 h-6 rounded-full z-10 flex items-center justify-center text-xs font-bold text-white ${
-//                             step.label === "Ordered" && step.completed
-//                               ? "bg-green-500"
-//                               : step.label === "Packed" && step.completed
-//                               ? "bg-blue-500"
-//                               : step.label === "Shipped" && step.completed
-//                               ? "bg-yellow-500"
-//                               : step.label === "Delivered" && step.completed
-//                               ? "bg-green-700"
-//                               : "bg-gray-500"
-//                           }`}
-//                         >
-//                           {step.completed ? "✓" : ""}
-//                         </div>
-
-                   
-//                         <span
-//                           className={`mt-2 text-xs font-medium ${
-//                             step.completed ? "text-white" : "text-gray-400"
-//                           }`}
-//                         >
-//                           {step.label}
-//                         </span>
-//                       </div>
-//                     );
-//                   })}
-//                 </div>
-//               </div>
-
-//               <div className="flex justify-between items-center mt-8">
-//                 <p className="text-lg font-semibold">
-//                   Total:{" "}
-//                   <span className="text-[#00FFFF]">
-//                     ₹{order.total.toFixed(2)}
-//                   </span>
-//                 </p>
-
-//                 {order.status !== "Delivered" &&
-//                   order.status !== "Cancelled" && (
-//                     <button
-//                       onClick={() => handleCancelOrder(order.date)}
-//                       className="bg-red-600 hover:bg-red-700 transition px-5 py-2 rounded-lg font-semibold"
-//                     >
-//                       Cancel Order
-//                     </button>
-//                   )}
-//               </div>
-
-//               {order.status === "Cancelled" && (
-//                 <p className="mt-3 text-red-500 font-semibold text-right">
-//                   Order Cancelled
-//                 </p>
-//               )}
-//             </div>
-//           ))
-//         )}
-//       </div>
-//       <Footer />
-//     </div>
-//   );
-// }
-
-
-
 import React, { useEffect, useState } from "react";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import api from "../../config/api";
 import toast from "react-hot-toast";
+import { Search, Filter } from "lucide-react";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
@@ -248,13 +29,11 @@ export default function Orders() {
   const handleCancelOrder = async (orderId) => {
     try {
       await api.patch(`/Order/${orderId}/cancel`);
-
       setOrders((prev) =>
         prev.map((o) =>
           o.id === orderId ? { ...o, status: "Cancelled" } : o
         )
       );
-
       toast.success("Order cancelled successfully!");
     } catch (err) {
       console.error("Cancel error:", err);
@@ -262,142 +41,141 @@ export default function Orders() {
     }
   };
 
-  const getStepStatus = (currentStatus) => {
-    const steps = ["Pending", "Shipped", "Delivered"];
-    const currentIndex = steps.findIndex(
-      (s) => s.toLowerCase() === currentStatus?.toLowerCase()
-    );
-
-    return steps.map((label, index) => ({
-      label,
-      completed: index <= currentIndex,
-    }));
-  };
-
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center bg-[#111111] text-white">
+        <div className="w-8 h-8 rounded-full border-4 border-[#2874f0] border-t-transparent animate-spin"></div>
       </div>
     );
 
+  // Flatten items for the Flipkart-style ungrouped list
+  const allItems = [];
+  orders.forEach(order => {
+    order.orderItems?.forEach(item => {
+      allItems.push({
+        ...item,
+        orderId: order.id,
+        orderDate: order.createdAt,
+        orderStatus: order.status
+      });
+    });
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
+    <div className="min-h-screen flex flex-col bg-[#111111] text-white font-sans">
       <Navbar />
 
-      <div className="pt-24 px-6 pb-12 max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-[#00FFFF] mb-10">
-          My Orders
-        </h2>
+      <main className="flex-grow pt-24 px-4 pb-16 max-w-6xl mx-auto w-full">
+        <div className="flex gap-4">
 
-        {orders.length === 0 ? (
-          <p className="text-center text-gray-400">No orders found.</p>
-        ) : (
-          orders.map((order, idx) => (
-            <div
-              key={order.id}
-              className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg mb-8 p-6"
-            >
-              <div className="flex justify-between items-center mb-5">
-                <h3 className="text-xl font-semibold text-[#00FFFF]">
-                  Order #{idx + 1}
-                </h3>
-                <p className="text-gray-400">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </p>
-              </div>
 
-              <div className="space-y-4">
-                {order.orderItems?.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-4 border-b border-gray-700 pb-3"
-                  >
-                    <img
-                      src={item.productImage}
-                      alt={item.productName}
-                      className="w-16 h-16 object-cover rounded-md"
-                    />
 
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg">
-                        {item.productName}
-                      </h4>
-                      <p className="text-gray-400 text-sm">
-                        Qty: {item.quantity}
-                      </p>
-                      <p className="text-[#00FFFF] font-bold">
-                        ₹{item.price} × {item.quantity}
-                      </p>
-                    </div>
+          {/* FLIPKART STYLE ORDER LIST */}
+          <div className="flex-1">
 
-                    <p className="text-white font-semibold">
-                      ₹{(item.price * item.quantity).toFixed(2)}
-                    </p>
-                  </div>
-                ))}
-              </div>
 
-              {/* Order Status */}
-              <div className="mt-6">
-                <p className="text-sm text-gray-400 mb-3">
-                  Order Status
-                </p>
 
-                <div className="flex gap-4">
-                  {getStepStatus(order.status).map((step, i) => (
-                    <div key={i} className="flex flex-col items-center">
-                      <div
-                        className={`w-6 h-6 rounded-full ${
-                          step.completed
-                            ? "bg-green-500"
-                            : "bg-gray-600"
-                        }`}
-                      />
-                      <span
-                        className={`text-xs mt-1 ${
-                          step.completed
-                            ? "text-white"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-                  ))}
+            {/* Items List */}
+            {allItems.length === 0 ? (
+              <div className="bg-[#1c1c1c] border border-gray-800 rounded-sm p-10 flex flex-col items-center justify-center text-center">
+                <div className="w-32 h-32 mb-4 bg-[#111111] rounded-full flex items-center justify-center">
+                  <Search size={40} className="text-gray-500" />
                 </div>
+                <h3 className="text-xl font-bold mb-2">No Orders found</h3>
+                <p className="text-gray-400">Looks like you haven't placed any order yet.</p>
               </div>
+            ) : (
+              <div className="space-y-3">
+                {allItems.map((item, idx) => {
+                  const isDelivered = item.status === 'Delivered';
+                  const isCancelled = item.orderStatus === 'Cancelled' || item.status === 'Cancelled';
 
-              <div className="flex justify-between items-center mt-8">
-                <p className="text-lg font-semibold">
-                  Total:{" "}
-                  <span className="text-[#00FFFF]">
-                    ₹{order.totalAmount?.toFixed(2)}
-                  </span>
-                </p>
-
-                {order.status !== "Delivered" &&
-                  order.status !== "Cancelled" && (
-                    <button
-                      onClick={() =>
-                        handleCancelOrder(order.id)
-                      }
-                      className="bg-red-600 hover:bg-red-700 transition px-5 py-2 rounded-lg font-semibold"
+                  return (
+                    <div
+                      key={`${item.orderId}-${item.productId}-${idx}`}
+                      className="bg-[#1c1c1c] border border-gray-800 rounded-sm hover:shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all group"
                     >
-                      Cancel Order
-                    </button>
-                  )}
-              </div>
+                      {/* Optional Header bridging multiple items if we wanted to show Order ID, 
+                          but Flipkart mainly just flattens them cleanly. */}
+                      <div className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center relative cursor-pointer">
 
-              {order.status === "Cancelled" && (
-                <p className="mt-3 text-red-500 font-semibold text-right">
-                  Order Cancelled
-                </p>
-              )}
-            </div>
-          ))
-        )}
-      </div>
+                        {/* 1. Image */}
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 bg-transparent flex items-center justify-center p-1">
+                          <img
+                            src={item.productImage}
+                            alt={item.productName}
+                            className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
+                          />
+                        </div>
+
+                        {/* 2. Text Details */}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm sm:text-base font-medium text-white line-clamp-2 group-hover:text-[#2874f0] transition-colors">
+                            {item.productName}
+                          </h4>
+                          <p className="text-xs text-gray-400 mt-2">Qty: {item.quantity}</p>
+
+                          {/* Cancel Logic Button inline */}
+                          {!isDelivered && !isCancelled && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleCancelOrder(item.orderId); }}
+                              className="mt-3 text-sm font-semibold text-red-500 hover:text-red-400 transition-colors"
+                            >
+                              Cancel Order
+                            </button>
+                          )}
+                        </div>
+
+                        {/* 3. Price */}
+                        <div className="sm:w-24 shrink-0 sm:text-center mt-2 sm:mt-0">
+                          <p className="text-sm sm:text-base font-bold text-white">
+                            ₹{(item.price * item.quantity).toFixed(2)}
+                          </p>
+                        </div>
+
+                        {/* 4. Delivery Status */}
+                        <div className="sm:w-64 shrink-0 mt-3 sm:mt-0">
+                          <div className="flex items-start gap-3">
+                            <div className="mt-1.5 shrink-0">
+                              {isCancelled ? (
+                                <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                              ) : isDelivered ? (
+                                <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                              ) : (
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#2874f0]"></div>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-white">
+                                {isCancelled
+                                  ? "Cancelled"
+                                  : isDelivered
+                                    ? "Delivered on " + new Date(item.orderDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+                                    : (item.status || "Pending")
+                                }
+                              </p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {isCancelled
+                                  ? "As per your request, your order has been cancelled."
+                                  : isDelivered
+                                    ? "Your item has been delivered"
+                                    : "Your item is currently being processed by the seller"
+                                }
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+          </div>
+        </div>
+      </main>
 
       <Footer />
     </div>
