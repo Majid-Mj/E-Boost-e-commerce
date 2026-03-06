@@ -372,9 +372,11 @@ export default function Login() {
 
           {/* Password */}
           <div>
-            <label className="block mb-1 text-gray-300">
-              Password
-            </label>
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-gray-300">
+                Password
+              </label>
+            </div>
             <input
               type="password"
               name="password"
@@ -383,11 +385,19 @@ export default function Login() {
               onChange={handleChange}
               className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:ring-2 focus:ring-cyan-400"
             />
-            {touched.password && errors.password && (
+            {touched.password && errors.password ? (
               <p className="text-red-400 text-sm mt-1">
                 {errors.password}
               </p>
-            )}
+            ) : null}
+            <div className="flex justify-end mt-2">
+              <span
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer transition-colors"
+              >
+                Forgot Password?
+              </span>
+            </div>
           </div>
 
           {/* Button */}

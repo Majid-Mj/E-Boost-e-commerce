@@ -1,90 +1,103 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../config/api";
+import toast from "react-hot-toast";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handleBlur = () => {
-    setTouched({ email: true });
-  };
-
-  const validate = () => {
-    const newErrors = {};
-    if (!email) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(email))
-      newErrors.email = "Enter a valid email";
-    return newErrors;
-  };
-
-  const handleSubmit = async (e) => {
+  const sendResetLink = async (e) => {
     e.preventDefault();
-    const validationErrors = validate();
-    setErrors(validationErrors);
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setErrors({ email: "Enter a valid email" });
+      return;
+    }
 
-    if (Object.keys(validationErrors).length === 0) {
-      setLoading(true);
-      setMessage("");
+    setErrors({});
+    setLoading(true);
+    setMessage("");
 
+    try {
+      const formData = new FormData();
+      formData.append("Email", email);
+
+      const res = await api.post("/auth/forgot-password", formData);
+
+      let successMsg = "OTP sent to your email!";
+      if (res.data && typeof res.data === 'object' && res.data.message) {
+        successMsg = String(res.data.message);
+      } else if (typeof res.data === 'string') {
+        successMsg = res.data;
+      }
+      toast.success(successMsg);
+
+      setMessage("An OTP code has been sent to your email.");
       setTimeout(() => {
-        setMessage(
-          "If an account with that email exists, a password reset link has been sent."
-        );
-        setLoading(false);
-      }, 2000);
+        navigate("/reset-password", { state: { email } });
+      }, 1500); // Small delay to let user see success toast
+    } catch (err) {
+      console.error(err);
+
+      let errMsg = "Failed to send reset link";
+      if (err.response?.data && typeof err.response.data === 'object' && err.response.data.message) {
+        errMsg = String(err.response.data.message);
+      } else if (typeof err.response?.data === 'string' && err.response.data.trim() !== '') {
+        errMsg = String(err.response.data);
+      }
+      toast.error(errMsg);
+
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#120624] text-white">
-      <div className="bg-[#333041]/80 p-8 rounded-2xl shadow-lg w-[90%] max-w-md backdrop-blur-md">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-white">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
+      <div className="bg-[#1e293b] p-8 rounded-xl shadow-md w-[90%] max-w-md border border-gray-700">
+        <h2 className="text-3xl font-semibold mb-6 text-center text-cyan-400">
           Forgot Password?
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={sendResetLink} className="space-y-5">
           <div>
-            <label className="block mb-1 text-gray-300">Email</label>
+            <label className="block mb-1 text-gray-300 font-medium">Email Address</label>
             <input
               type="email"
               value={email}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-[#413b55] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]"
-              placeholder="Enter your email"
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full p-3 rounded-lg bg-[#0f172a] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all border ${errors.email ? 'border-red-500' : 'border-gray-600'}`}
+              placeholder="Enter your registered email"
             />
-            {touched.email && errors.email && (
-              <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+            {errors.email && (
+              <p className="text-red-400 text-xs mt-2 font-medium">{errors.email}</p>
             )}
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#333041]/80 hover:bg-[#413b55] transition duration-300 p-3 rounded-lg font-semibold"
+            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black p-3 rounded-lg font-semibold transition duration-300 disabled:opacity-50"
           >
-            {loading ? "Sending..." : "Send Reset Link"}
+            {loading ? "Sending Link..." : "Send Reset Link"}
           </button>
         </form>
 
         {message && (
-          <p className="text-center mt-4 text-green-400">{message}</p>
+          <div className="mt-6 p-4 rounded-xl bg-cyan-900/20 border border-cyan-500/20 text-center text-sm font-medium text-cyan-400">
+            {message}
+          </div>
         )}
 
-        <p className="text-center mt-4 text-gray-400">
+        <p className="text-center mt-6 text-gray-400">
           Remember your password?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-[#7c3aed] hover:underline cursor-pointer"
+            className="text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer transition-colors"
           >
             Back to Login
           </span>
