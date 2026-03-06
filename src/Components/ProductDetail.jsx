@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import { useCart } from "../contexts/Cartcontext";
@@ -8,18 +8,20 @@ import api from "../config/api";
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist, wishlist } = useCart();
 
   useEffect(() => {
     api
       .get(`/products/${id}`)
-      .then((res) => setProduct(res.data))
+      .then((res) => setProduct(res.data.data || res.data))
       .catch((err) => console.error(err));
   }, [id]);
 
   if (!product) return <p className="text-white text-center py-10">Loading...</p>;
 
+  const imageUrl = product.images?.length > 0 ? product.images[0].imageUrl : "https://via.placeholder.com/400";
   const isOutOfStock = product.stock <= 0;
 
   return (
@@ -28,7 +30,7 @@ export default function ProductDetail() {
       <div className="pt-16 p-10 flex flex-col md:flex-row gap-10 items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <img
-            src={product.image}
+            src={imageUrl}
             alt={product.name}
             className="w-[400px] h-[400px] object-cover rounded-lg shadow-lg"
           />
@@ -40,8 +42,8 @@ export default function ProductDetail() {
           </h2>
 
           <p className="text-gray-300 mb-4">
-            {product.category
-              ? product.category.charAt(0).toUpperCase() + product.category.slice(1)
+            {product.categoryName
+              ? product.categoryName.charAt(0).toUpperCase() + product.categoryName.slice(1)
               : product.description || "High-quality gaming accessory for pro gamers."}
           </p>
 
@@ -59,17 +61,9 @@ export default function ProductDetail() {
             <button
               onClick={() => {
                 if (isInWishlist(product.id)) {
-                  const wishlistItem = wishlist.find(item => item.productId === product.id);
-                  if (wishlistItem) removeFromWishlist(wishlistItem.id);
+                  removeFromWishlist(product.id);
                 } else {
-                  addToWishlist({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
-                    description:
-                      product.description || "High-quality gaming accessory for pro gamers.",
-                  });
+                  addToWishlist(product);
                 }
               }}
               className="p-3 bg-gray-700 rounded-full hover:bg-gray-600 transition"
@@ -87,27 +81,24 @@ export default function ProductDetail() {
             <button
               onClick={() => !isOutOfStock && addToCart(product)}
               disabled={isOutOfStock}
-              className={`px-6 py-3 rounded-md font-semibold transition ${
-                isOutOfStock
-                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                  : "bg-[#00FFFF] text-black hover:bg-cyan-400"
-              }`}
+              className={`px-6 py-3 rounded-md font-semibold transition ${isOutOfStock
+                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                : "bg-[#00FFFF] text-black hover:bg-cyan-400"
+                }`}
             >
               {isOutOfStock ? "Out of Stock" : "Add to Cart"}
             </button>
 
-            <Link to="/cart/address">
-              <button
-                disabled={isOutOfStock}
-                className={`border px-6 py-3 rounded-md transition ${
-                  isOutOfStock
-                    ? "border-gray-600 text-gray-400 cursor-not-allowed"
-                    : "border-[#00FFFF] hover:bg-[#00FFFF] hover:text-black"
+            <button
+              onClick={() => navigate("/cart/address", { state: { buyNowProduct: { id: product.id, quantity: 1 } } })}
+              disabled={isOutOfStock}
+              className={`border px-6 py-3 rounded-md transition ${isOutOfStock
+                ? "border-gray-600 text-gray-400 cursor-not-allowed"
+                : "border-[#00FFFF] hover:bg-[#00FFFF] hover:text-black"
                 }`}
-              >
-                Buy Now
-              </button>
-            </Link>
+            >
+              Buy Now
+            </button>
           </div>
         </div>
       </div>

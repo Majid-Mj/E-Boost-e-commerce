@@ -3,14 +3,15 @@ import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { useCart } from "../../contexts/Cartcontext";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CreditCard, Smartphone, Banknote, ShieldCheck } from "lucide-react";
 
 
 export default function Payment() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [paymentMethod, setPaymentMethod] = useState("card");
-  const { cart, clearCart, placeOrder, getTotalItems, getTotalPrice } = useCart();
+  const { cart, clearCart, placeOrderFromCart, buyNow, getTotalItems, getTotalPrice } = useCart();
 
 
   const savedAddress = JSON.parse(localStorage.getItem("userAddress")) || {};
@@ -47,33 +48,43 @@ export default function Payment() {
       return;
     }
 
-    // Save to database via API
-    const success = await placeOrder({ address });
+    let mappedMethod = "Cards";
+    if (paymentMethod === "upi") mappedMethod = "UPI";
+    else if (paymentMethod === "cod") mappedMethod = "CashOnDelivery";
+
+    let success = false;
+    if (location.state && location.state.buyNowProduct) {
+      success = await buyNow(location.state.buyNowProduct.id, {
+        addressId: savedAddress.id,
+        quantity: location.state.buyNowQuantity || 1,
+        paymentMethod: mappedMethod
+      });
+    } else {
+      success = await placeOrderFromCart({
+        addressId: savedAddress.id,
+        paymentMethod: mappedMethod
+      });
+    }
+
     if (!success) {
       return;
     }
 
-    toast.success("Payment Successful!", {
-      position: "bottom-left",
-      style: {
-        background: "#1f1b2e",
-        color: "#00FFFF",
-        fontWeight: "bold",
-      },
-      iconTheme: {
-        primary: "#00FFFF",
-        secondary: "#1f1b2e",
-      },
-    });
-
-    setTimeout(() => {
-      clearCart();
-      navigate("/orders");
-    }, 2000);
+    clearCart();
+    navigate("/payment-success");
   };
 
-  const totalPrice = getTotalPrice();
-  const totalItems = getTotalItems();
+  let totalPrice = 0;
+  let totalItems = 0;
+
+  if (location.state && location.state.buyNowProduct) {
+    const qty = location.state.buyNowQuantity || 1;
+    totalPrice = location.state.buyNowProduct.price * qty;
+    totalItems = qty;
+  } else {
+    totalPrice = getTotalPrice();
+    totalItems = getTotalItems();
+  }
 
 
   return (

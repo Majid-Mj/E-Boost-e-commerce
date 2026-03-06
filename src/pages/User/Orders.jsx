@@ -7,13 +7,26 @@ import { Search, Filter } from "lucide-react";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // ✅ Fetch orders from backend
   const fetchOrders = async () => {
     try {
       const res = await api.get("/Order/my-orders");
-      setOrders(res.data || []);
+      const ordersData = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setOrders(ordersData);
+
+      // Fetch products to map images correctly
+      const prodRes = await api.get("/products");
+      let productsArray = [];
+      if (Array.isArray(prodRes.data?.data)) {
+        productsArray = prodRes.data.data;
+      } else if (Array.isArray(prodRes.data)) {
+        productsArray = prodRes.data;
+      }
+      setProducts(productsArray);
+
     } catch (err) {
       console.error("Error fetching orders:", err);
     } finally {
@@ -50,16 +63,28 @@ export default function Orders() {
 
   // Flatten items for the Flipkart-style ungrouped list
   const allItems = [];
-  orders.forEach(order => {
-    order.orderItems?.forEach(item => {
-      allItems.push({
-        ...item,
-        orderId: order.id,
-        orderDate: order.createdAt,
-        orderStatus: order.status
-      });
+  if (Array.isArray(orders)) {
+    orders.forEach(order => {
+      // In C# OrderDto, the items list is usually serialized as 'items'
+      const orderItemsList = order.items || order.Items || order.orderItems || [];
+
+      if (Array.isArray(orderItemsList)) {
+        orderItemsList.forEach(item => {
+          const product = products.find(p => p.id === item.productId || p.id === item.ProductId);
+          const dbImage = product?.images?.[0]?.imageUrl || product?.image || null;
+
+          allItems.push({
+            ...item,
+            orderId: order.id || order.Id,
+            orderDate: order.orderDate || order.OrderDate || order.createdAt,
+            orderStatus: order.status || order.Status,
+            price: item.unitPrice || item.price || item.UnitPrice || 0,
+            productImage: dbImage || item.productImage || item.img || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80" // Fallback image since DTO lacks it
+          });
+        });
+      }
     });
-  });
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#111111] text-white font-sans">

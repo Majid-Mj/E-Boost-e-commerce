@@ -15,6 +15,7 @@ import Wishlist from "../pages/User/Wishlist";
 import User from "../pages/User/User";
 import Addaddress from "../pages/User/Addaddress";
 import Payment from "../pages/User/Payment";
+import PaymentSuccess from "../pages/User/PaymentSuccess";
 import Orders from "../pages/User/Orders";
 import AdminRoutes from "./AdminRoutes";
 import { AuthProvider } from "../contexts/AuthContext";
@@ -45,6 +46,7 @@ export default function AppRoutes() {
             <Route path="/User" element={<User />} />
             <Route path="/address" element={<Addaddress />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
             <Route path="/admin/*" element={
               <ProtectedRoute role={2}>
