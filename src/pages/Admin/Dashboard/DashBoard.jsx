@@ -1,341 +1,3 @@
-
-
-
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
-// import { Pie, Bar } from "react-chartjs-2";
-// import {
-//   Chart as ChartJS,
-//   ArcElement,
-//   Tooltip,
-//   Legend,
-//   BarElement,
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-// } from "chart.js";
-
-// ChartJS.register(
-//   ArcElement,
-//   Tooltip,
-//   Legend,
-//   BarElement,
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement
-// );
-
-// export default function Dashboard() {
-//   const [stats, setStats] = useState({
-//     revenue: 0,
-//     orders: 0,
-//     customers: 0,
-//     products: 0,
-//     monthlyRevenue: [],
-//     monthlyOrders: [],
-//   });
-
-//   const [categoryChart, setCategoryChart] = useState({
-//     labels: [],
-//     data: [],
-//   });
-
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const fetchStats = async () => {
-//       try {
-//         const [usersRes, productsRes] = await Promise.all([
-//           axios.get("http://localhost:4444/users"),
-//           axios.get("http://localhost:4444/products"),
-//         ]);
-
-//         const users = usersRes.data || [];
-//         const products = productsRes.data || [];
-
-//         //Collect all orders
-//         let allOrders = [];
-//         users.forEach((user) => {
-//           if (user.orders && Array.isArray(user.orders)) {
-//             allOrders.push(...user.orders);
-//           }
-//         });
-
-//         //Total revenue
-//         const totalRevenue = allOrders.reduce(
-//           (sum, order) => sum + (order.total || 0),
-//           0
-//         );
-
-//         //Total customers
-//         const totalCustomers = users.filter(
-//           (user) => !user.email.includes("admin")
-//         ).length;
-
-//         //Monthly revenue and orders
-//         const monthlyRevenue = Array(12).fill(0);
-//         const monthlyOrders = Array(12).fill(0);
-
-//         allOrders.forEach((order) => {
-//           if (order.date) {
-//             const month = new Date(order.date).getMonth();
-//             monthlyRevenue[month] += order.total || 0;
-//             monthlyOrders[month] += 1;
-//           }
-//         });
-
-//         //Category data for Pie chart
-//         const categoryCount = {};
-//         allOrders.forEach((order) => {
-//           if (order.items && Array.isArray(order.items)) {
-//             order.items.forEach((item) => {
-//               const category = item.product?.category || "Uncategorized";
-//               categoryCount[category] =
-//                 (categoryCount[category] || 0) + (item.quantity || 0);
-//             });
-//           }
-//         });
-
-//         const chartLabels = Object.keys(categoryCount);
-//         const chartData = Object.values(categoryCount);
-
-//         setCategoryChart({
-//           labels: chartLabels,
-//           data: chartData,
-//         });
-
-//         setStats({
-//           revenue: totalRevenue,
-//           orders: allOrders.length,
-//           customers: totalCustomers,
-//           products: products.length,
-//           monthlyRevenue,
-//           monthlyOrders,
-//         });
-//       } catch (error) {
-//         console.error("Error fetching dashboard stats:", error);
-//       }
-//     };
-
-//     fetchStats();
-//   }, []);
-
-//   const formattedRevenue = stats.revenue.toLocaleString("en-IN", {
-//     style: "currency",
-//     currency: "INR",
-//   });
-
-//   const cards = [
-//     {
-//       title: "Total Revenue",
-//       value: formattedRevenue,
-//       color: "bg-green-500",
-//     },
-//     {
-//       title: "Total Orders",
-//       value: stats.orders,
-//       color: "bg-blue-500",
-//       onClick: () => navigate("/admin/orders"),
-//     },
-//     {
-//       title: "Total Customers",
-//       value: stats.customers,
-//       color: "bg-yellow-400",
-//       onClick: () => navigate("/admin/users"),
-//     },
-//     {
-//       title: "Total Products",
-//       value: stats.products,
-//       color: "bg-purple-500",
-//       onClick: () => navigate("/admin/products"),
-//     },
-//   ];
-
-//   const monthLabels = [
-//     "Jan",
-//     "Feb",
-//     "Mar",
-//     "Apr",
-//     "May",
-//     "Jun",
-//     "Jul",
-//     "Aug",
-//     "Sep",
-//     "Oct",
-//     "Nov",
-//     "Dec",
-//   ];
-
-  
-//   const salesData = {
-//     labels: monthLabels,
-//     datasets: [ 
-//       {
-//         type: "bar",
-//         label: "Revenue (₹)",
-//         data: stats.monthlyRevenue,
-//         backgroundColor: "rgba(99, 102, 241, 0.7)",
-//         borderRadius: 6,
-//       },
-//       {
-//         type: "line",
-//         label: "Orders",
-//         data: stats.monthlyOrders,
-//         borderColor: "rgba(16, 185, 129, 1)",
-//         backgroundColor: "rgba(16, 185, 129, 0.3)",
-//         tension: 0.4,
-//         fill: true,
-//         yAxisID: "orders",
-//       },
-//     ],
-//   };
-
-
-//     const salesOptions = {
-//       responsive: true,
-//       interaction: { mode: "index", intersect: false },
-//       stacked: false,
-//       animation: false, 
-//       plugins: {
-//         legend: { position: "top" },
-//         tooltip: { mode: "index", intersect: false },
-//       },
-//       scales: {
-//         y: {
-//           beginAtZero: true,
-//           title: { display: true, text: "Revenue (₹)" },
-//         },
-//         orders: {
-//           beginAtZero: true,
-//           position: "right",
-//           title: { display: true, text: "Orders" },
-//           grid: { drawOnChartArea: false },
-//         },
-//       },
-//     };
-
-
-//   return (
-//     <div className="font-sans text-gray-800 p-4 sm:p-6 lg:p-8 bg-[#f7f6fb] min-h-screen">
-//       <h1 className="text-2xl sm:text-3xl font-semibold mb-6 text-[#333041]">
-//         Dashboard
-//       </h1>
-
-    
-//       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-8">
-//         {cards.map((card) => (
-//           <div
-//             key={card.title}
-//             onClick={card.onClick}
-//             className="bg-white rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition duration-200 p-5 sm:p-6 flex flex-col justify-between cursor-pointer"
-//           >
-//             <p className="text-gray-500 text-sm sm:text-base">{card.title}</p>
-//             <h2 className="text-2xl sm:text-3xl font-bold mt-2">
-//               {card.value}
-//             </h2>
-//           </div>
-//         ))}
-//       </div>
-
-//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-//         <div className="col-span-2 bg-white rounded-xl shadow p-4 sm:p-6">
-//           <h2 className="font-semibold text-base sm:text-lg mb-4">
-//             Sales Overview
-//           </h2>
-//           <Bar data={salesData} options={salesOptions} />
-//         </div>
-
-//         {/* Orders by Category */}
-//         <div className="bg-white rounded-xl shadow p-4 sm:p-6 flex flex-col justify-between">
-//           <h2 className="font-semibold text-base sm:text-lg mb-4">
-//             Orders by Category
-//           </h2>
-
-//           <div className="relative flex flex-col items-center">
-//             <div className="flex justify-center items-center h-64 w-full">
-//               {categoryChart.labels.length > 0 ? (
-//                 <Pie
-//                   data={{
-//                     labels: categoryChart.labels,
-//                     datasets: [
-//                       {
-//                         label: "Products Ordered",
-//                         data: categoryChart.data,
-//                         backgroundColor: [
-//                           "#10B981",
-//                           "#3B82F6",
-//                           "#F59E0B",
-//                           "#6366F1",
-//                           "#8B5CF6",
-//                           "#EC4899",
-//                         ],
-//                         borderWidth: 0,
-//                         cutout: "70%",
-//                       },
-//                     ],
-//                   }}
-//                   options={{
-//                     responsive: true,
-//                     plugins: {
-//                       legend: { display: false },
-//                       tooltip: {
-//                         backgroundColor: "#111827",
-//                         bodyColor: "#fff",
-//                         borderColor: "#fff",
-//                         borderWidth: 1,
-//                         padding: 10,
-//                         displayColors: false,
-//                       },
-//                     },
-//                   }}
-//                 />
-//               ) : (
-//                 <p className="text-gray-500 text-sm">
-//                   No category data available
-//                 </p>
-//               )}
-
-//               <div className="absolute text-center">
-//                 <p className="text-gray-500 text-sm">Total Products</p>
-//                 <p className="text-2xl font-semibold text-gray-800">
-//                   {categoryChart.data.reduce((sum, val) => sum + val, 0)}
-//                 </p>
-//               </div>
-//             </div>
-
-//             {categoryChart.labels.length > 0 && (
-//               <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3 text-sm text-gray-600">
-//                 {categoryChart.labels.map((label, index) => (
-//                   <div key={index} className="flex items-center space-x-2">
-//                     <span
-//                       className="inline-block w-3 h-3 rounded-full"
-//                       style={{
-//                         backgroundColor: [
-//                           "#10B981",
-//                           "#3B82F6",
-//                           "#F59E0B",
-//                           "#6366F1",
-//                           "#8B5CF6",
-//                           "#EC4899",
-//                         ][index % 6],
-//                       }}
-//                     ></span>
-//                     <span>{label}</span>
-//                   </div>
-//                 ))}
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// } 
-
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie, Bar } from "react-chartjs-2";
@@ -352,6 +14,18 @@ import {
   LineElement,
   Filler,
 } from "chart.js";
+import {
+  TrendingUp,
+  ShoppingBag,
+  Users,
+  Package,
+  IndianRupee,
+  ArrowUpRight,
+  ArrowDownRight,
+  Calendar,
+  Layers,
+  BarChart3
+} from "lucide-react";
 
 ChartJS.register(
   ArcElement,
@@ -380,34 +54,30 @@ export default function Dashboard() {
     data: [],
   });
 
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        setLoading(true);
         const [ordersRes, productsRes] = await Promise.all([
-          api.get("/orders/admin"),   // admin orders
-          api.get("/products/admin")   // since you're admin 
+          api.get("/orders/admin"),
+          api.get("/products/admin")
         ]);
-        const orders = Array.isArray(ordersRes.data?.data)
-          ? ordersRes.data.data
-          : [];
 
-        const products = Array.isArray(productsRes.data?.data)
-          ? productsRes.data.data
-          : [];
+        const orders = Array.isArray(ordersRes.data?.data) ? ordersRes.data.data : [];
+        const products = Array.isArray(productsRes.data?.data) ? productsRes.data.data : [];
 
-        const totalRevenue = orders.reduce(
-          (sum, order) => sum + (order.totalAmount || 0),
-          0
-        );
+        const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
 
         const monthlyRevenue = Array(12).fill(0);
         const monthlyOrders = Array(12).fill(0);
 
         orders.forEach((order) => {
           if (order.createdAt) {
-            const month = new Date(order.createdAt).getMonth();
+            const date = new Date(order.createdAt);
+            const month = date.getMonth();
             monthlyRevenue[month] += order.totalAmount || 0;
             monthlyOrders[month] += 1;
           }
@@ -418,8 +88,7 @@ export default function Dashboard() {
           if (order.orderItems) {
             order.orderItems.forEach((item) => {
               const category = item.category || "Uncategorized";
-              categoryCount[category] =
-                (categoryCount[category] || 0) + item.quantity;
+              categoryCount[category] = (categoryCount[category] || 0) + (item.quantity || 0);
             });
           }
         });
@@ -439,6 +108,8 @@ export default function Dashboard() {
         });
       } catch (error) {
         console.error("Dashboard error:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -451,28 +122,48 @@ export default function Dashboard() {
   });
 
   const cards = [
-    { title: "Total Revenue", value: formattedRevenue },
     {
-      title: "Total Orders",
+      title: "Total Revenue",
+      value: formattedRevenue,
+      icon: <IndianRupee size={22} />,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+      trend: "+12.5%",
+      isPostive: true
+    },
+    {
+      title: "Orders Done",
       value: stats.orders,
-      onClick: () => navigate("/admin/orders"),
+      icon: <ShoppingBag size={22} />,
+      color: "text-purple-600",
+      bg: "bg-purple-50",
+      trend: "+8.2%",
+      isPostive: true,
+      onClick: () => navigate("/admin/orders")
     },
     {
-      title: "Total Customers",
+      title: "Active Customers",
       value: stats.customers,
-      onClick: () => navigate("/admin/users"),
+      icon: <Users size={22} />,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+      trend: "+5.4%",
+      isPostive: true,
+      onClick: () => navigate("/admin/users")
     },
     {
-      title: "Total Products",
+      title: "Product Range",
       value: stats.products,
-      onClick: () => navigate("/admin/products"),
+      icon: <Package size={22} />,
+      color: "text-amber-600",
+      bg: "bg-amber-50",
+      trend: "Stable",
+      isPostive: true,
+      onClick: () => navigate("/admin/products")
     },
   ];
 
-  const monthLabels = [
-    "Jan","Feb","Mar","Apr","May","Jun",
-    "Jul","Aug","Sep","Oct","Nov","Dec",
-  ];
+  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const salesData = {
     labels: monthLabels,
@@ -481,17 +172,22 @@ export default function Dashboard() {
         type: "bar",
         label: "Revenue (₹)",
         data: stats.monthlyRevenue,
-        backgroundColor: "rgba(99,102,241,0.7)",
-        borderRadius: 6,
+        backgroundColor: "rgba(124, 58, 237, 0.7)", // Purple-600 with opacity
+        borderRadius: 8,
+        hoverBackgroundColor: "rgba(124, 58, 237, 1)",
       },
       {
         type: "line",
-        label: "Orders",
+        label: "Order Count",
         data: stats.monthlyOrders,
-        borderColor: "rgba(16,185,129,1)",
-        backgroundColor: "rgba(16,185,129,0.3)",
+        borderColor: "#10b981", // Emerald-500
+        backgroundColor: "rgba(16, 185, 129, 0.1)",
         tension: 0.4,
         fill: true,
+        pointBackgroundColor: "#10b981",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
         yAxisID: "orders",
       },
     ],
@@ -499,64 +195,181 @@ export default function Dashboard() {
 
   const salesOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    stacked: false,
     plugins: {
-      legend: { position: "top" },
+      legend: {
+        position: "top",
+        align: "end",
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: { weight: '600', size: 12 }
+        }
+      },
+      tooltip: {
+        backgroundColor: "#1e293b",
+        padding: 12,
+        titleFont: { size: 14, weight: '700' },
+        bodyFont: { size: 13 },
+        cornerRadius: 8,
+      }
     },
     scales: {
-      y: { beginAtZero: true },
+      x: {
+        grid: { display: false },
+        ticks: { font: { weight: '600' }, color: '#64748b' }
+      },
+      y: {
+        beginAtZero: true,
+        grid: { color: "#f1f5f9" },
+        ticks: { font: { weight: '600' }, color: '#64748b' }
+      },
       orders: {
         beginAtZero: true,
         position: "right",
-        grid: { drawOnChartArea: false },
+        grid: { display: false },
+        ticks: { font: { weight: '600' }, color: '#10b981' }
       },
     },
   };
 
-  return (
-    <div className="font-sans text-gray-800 p-6 bg-[#f7f6fb] min-h-screen">
-      <h1 className="text-2xl font-semibold mb-6 text-[#333041]">
-        Dashboard
-      </h1>
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#f8fafc]">
+        <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-slate-700 font-bold animate-pulse">Initializing Dashboard...</p>
+      </div>
+    );
+  }
 
+  return (
+    <div className="p-4 sm:p-8 bg-[#f8fafc] min-h-screen font-sans text-slate-900">
+
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
+            <BarChart3 className="text-purple-600" size={32} />
+            Business Dashboard
+          </h1>
+          <p className="text-slate-600 font-medium mt-1">Detailed overview of your store's performance and operations.</p>
+        </div>
+        <div className="bg-white border border-slate-200 px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-3 text-slate-700 font-bold">
+          <Calendar size={18} className="text-purple-600" />
+          {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+        </div>
+      </div>
+
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        {cards.map((card) => (
+        {cards.map((card, i) => (
           <div
-            key={card.title}
+            key={i}
             onClick={card.onClick}
-            className="bg-white rounded-xl shadow p-6 cursor-pointer hover:shadow-lg"
+            className={`bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-purple-100 transition-all duration-300 group ${card.onClick ? 'cursor-pointer' : ''}`}
           >
-            <p className="text-gray-500">{card.title}</p>
-            <h2 className="text-2xl font-bold mt-2">{card.value}</h2>
+            <div className="flex justify-between items-start mb-4">
+              <div className={`${card.bg} ${card.color} p-3 rounded-2xl transition-transform group-hover:scale-110`}>
+                {card.icon}
+              </div>
+              <div className={`flex items-center gap-0.5 text-xs font-bold px-2 py-1 rounded-lg ${card.isPostive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                {card.isPostive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                {card.trend}
+              </div>
+            </div>
+            <div>
+              <p className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">{card.title}</p>
+              <h3 className="text-2xl font-bold mt-1 text-slate-900">{card.value}</h3>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="col-span-2 bg-white rounded-xl shadow p-6">
-          <h2 className="font-semibold mb-4">Sales Overview</h2>
-          <Bar data={salesData} options={salesOptions} />
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Sales Overview */}
+        <div className="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="text-purple-600" size={20} />
+              <h2 className="text-xl font-bold text-slate-900">Revenue Analytics</h2>
+            </div>
+            <div className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 uppercase tracking-widest">
+              Last 12 Months
+            </div>
+          </div>
+          <div className="h-[400px]">
+            <Bar data={salesData} options={salesOptions} />
+          </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="font-semibold mb-4">Orders by Category</h2>
-          {categoryChart.labels.length > 0 ? (
-            <Pie
-              data={{
-                labels: categoryChart.labels,
-                datasets: [{
-                  data: categoryChart.data,
-                  backgroundColor: [
-                    "#10B981","#3B82F6","#F59E0B",
-                    "#6366F1","#8B5CF6","#EC4899",
-                  ],
-                }],
-              }}
-            />
-          ) : (
-            <p>No category data</p>
-          )}
+        {/* Category Share */}
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 flex flex-col">
+          <div className="flex items-center gap-2 mb-8">
+            <Layers className="text-purple-600" size={20} />
+            <h2 className="text-xl font-bold text-slate-900">Category Share</h2>
+          </div>
+          <div className="flex-1 flex flex-col justify-center items-center">
+            {categoryChart.labels.length > 0 ? (
+              <div className="relative w-full aspect-square max-w-[280px]">
+                <Pie
+                  data={{
+                    labels: categoryChart.labels,
+                    datasets: [{
+                      data: categoryChart.data,
+                      backgroundColor: [
+                        "#7c3aed", // Purple
+                        "#10b981", // Emerald
+                        "#f59e0b", // Amber
+                        "#3b82f6", // Blue
+                        "#f43f5e", // Rose
+                        "#0ea5e9", // Sky
+                      ],
+                      borderWidth: 6,
+                      borderColor: "#ffffff",
+                      hoverOffset: 15
+                    }],
+                  }}
+                  options={{
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: {
+                        enabled: true,
+                        padding: 12,
+                        backgroundColor: "#1e293b",
+                        titleFont: { size: 14, weight: '700' },
+                        bodyFont: { size: 13 },
+                        cornerRadius: 8,
+                      }
+                    },
+                    cutout: '65%'
+                  }}
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Total</span>
+                  <span className="text-3xl font-bold text-slate-900">
+                    {categoryChart.data.reduce((a, b) => a + b, 0)}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center opacity-40 text-center">
+                <Package size={64} className="mb-4 text-slate-300" />
+                <p className="text-slate-700 font-bold">No categorical data found</p>
+              </div>
+            )}
+
+            {/* Legend Mapping */}
+            <div className="mt-10 grid grid-cols-2 gap-y-3 gap-x-6 w-full">
+              {categoryChart.labels.map((label, idx) => (
+                <div key={idx} className="flex items-center gap-2.5">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ["#7c3aed", "#10b981", "#f59e0b", "#3b82f6", "#f43f5e", "#0ea5e9"][idx % 6] }}></div>
+                  <span className="text-xs font-bold text-slate-600 truncate">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
