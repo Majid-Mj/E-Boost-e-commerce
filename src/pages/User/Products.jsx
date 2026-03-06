@@ -121,58 +121,59 @@ export default function Products() {
       <Navbar />
       <div className="pt-16 py-10">
 
-        {/* 🔍 Search */}
-        <div className="flex justify-center mb-6">
-          <div className="relative w-[90%] md:w-[500px]">
-            <input
-              type="text"
-              placeholder="Search for products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-800 text-white rounded-lg pl-10 pr-4 py-2 outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-          </div>
-        </div>
+        {/* 🔍 Search & Filters */}
+        <div className="max-w-7xl mx-auto px-6 mb-12">
+          <div className="flex flex-col lg:flex-row items-center gap-4">
+            {/* Search Box */}
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              <input
+                type="text"
+                placeholder="Search for products..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-gray-800 text-white rounded-lg pl-10 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-cyan-400 border border-transparent transition-all"
+              />
+            </div>
 
-        {/* 🎯 Filters */}
-        <div className="flex flex-col md:flex-row justify-center gap-4 mb-10">
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="bg-gray-800 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-cyan-400 w-[90%] md:w-[250px]"
-          >
-            <option value="">Filter by Category</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {formatCategoryLabel(cat)}
-              </option>
-            ))}
-          </select>
+            {/* Filter Group */}
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-4 w-full lg:w-auto">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="bg-gray-800 text-white rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-cyan-400 w-full md:w-[200px] border border-transparent cursor-pointer"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {formatCategoryLabel(cat)}
+                  </option>
+                ))}
+              </select>
 
-          <select
-            value={priceFilter}
-            onChange={(e) => setPriceFilter(e.target.value)}
-            className="bg-gray-800 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-cyan-400 w-[90%] md:w-[250px]"
-          >
-            <option value="">Filter by Price</option>
-            <option value="500-1000">₹500 - ₹1000</option>
-            <option value="1000-2000">₹1000 - ₹2000</option>
-            <option value="2000-5000">₹2000 - ₹5000</option>
-            <option value="5000-10000">₹5000 - ₹10000</option>
-          </select>
+              <select
+                value={priceFilter}
+                onChange={(e) => setPriceFilter(e.target.value)}
+                className="bg-gray-800 text-white rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-cyan-400 w-full md:w-[200px] border border-transparent cursor-pointer"
+              >
+                <option value="">Price Range</option>
+                <option value="500-1000">₹500 - ₹1000</option>
+                <option value="1000-2000">₹1000 - ₹2000</option>
+                <option value="2000-5000">₹2000 - ₹5000</option>
+                <option value="5000-10000">₹5000 - ₹10000</option>
+              </select>
 
-          <div className="flex items-center justify-center w-[90%] md:w-[150px]">
-            <button
-              onClick={() => {
-                setSearch("");
-                setCategoryFilter("");
-                setPriceFilter("");
-              }}
-              className="w-full bg-transparent border border-gray-600 text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-            >
-              Clear Filters
-            </button>
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setCategoryFilter("");
+                  setPriceFilter("");
+                }}
+                className="px-6 py-2.5 bg-gray-700/50 hover:bg-gray-700 border border-gray-600 text-gray-300 hover:text-white rounded-lg transition-all text-sm font-semibold active:scale-95 whitespace-nowrap w-full md:w-auto"
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </div>
 
@@ -318,8 +319,8 @@ export default function Products() {
                 key={page}
                 onClick={() => handlePageChange(page)}
                 className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${page === currentPage
-                    ? "bg-cyan-500 text-black"
-                    : "bg-gray-800 text-white hover:bg-gray-700"
+                  ? "bg-cyan-500 text-black"
+                  : "bg-gray-800 text-white hover:bg-gray-700"
                   }`}
               >
                 {page}
