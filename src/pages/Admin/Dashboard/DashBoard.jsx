@@ -20,8 +20,6 @@ import {
   Users,
   Package,
   IndianRupee,
-  ArrowUpRight,
-  ArrowDownRight,
   Calendar,
   Layers,
   BarChart3
@@ -61,36 +59,85 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const [ordersRes, productsRes] = await Promise.all([
-          api.get("/orders/admin"),
-          api.get("/products/admin")
+        const [ordersRes, productsRes, usersRes] = await Promise.all([
+          api.get("/Order/admin?page=1&pagesize=5000"),
+          api.get("/products/Admin"),
+          api.get("/admin/users/Users?page=1&pageSize=5000")
         ]);
 
-        const orders = Array.isArray(ordersRes.data?.data) ? ordersRes.data.data : [];
-        const products = Array.isArray(productsRes.data?.data) ? productsRes.data.data : [];
+        // Safely extract orders
+        const ordData = ordersRes.data;
+        let pOrders = [];
+        if (Array.isArray(ordData)) {
+          pOrders = ordData;
+        } else if (ordData && typeof ordData === 'object') {
+          for (const key of Object.keys(ordData)) {
+            if (Array.isArray(ordData[key])) {
+              pOrders = ordData[key];
+              break;
+            }
+          }
+          if (pOrders.length === 0 && ordData.data && typeof ordData.data === 'object' && !Array.isArray(ordData.data)) {
+            for (const key of Object.keys(ordData.data)) {
+              if (Array.isArray(ordData.data[key])) {
+                pOrders = ordData.data[key];
+                break;
+              }
+            }
+          } else if (pOrders.length === 0 && ordData.data && Array.isArray(ordData.data)) {
+            pOrders = ordData.data;
+          }
+        }
 
-        const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+        // Normalize Orders explicitly to guarantee casing matches
+        const orders = pOrders.map(order => ({
+          ...order,
+          id: order.id || order.Id,
+          totalAmount: Number(order.totalAmount || order.TotalAmount || 0),
+          orderDate: order.orderDate || order.OrderDate || order.createdAt || order.CreatedAt,
+          items: order.items || order.Items || order.orderItems || order.OrderItems || []
+        }));
+
+        // Safely extract products & users
+        const products = productsRes.data?.data || productsRes.data || [];
+
+        const usrData = usersRes.data;
+        let usersList = [];
+        if (usrData?.data?.data && Array.isArray(usrData.data.data)) usersList = usrData.data.data;
+        else if (Array.isArray(usrData?.data)) usersList = usrData.data;
+        else if (Array.isArray(usrData)) usersList = usrData;
+
+        // Process Orders
+        const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
 
         const monthlyRevenue = Array(12).fill(0);
         const monthlyOrders = Array(12).fill(0);
 
         orders.forEach((order) => {
-          if (order.createdAt) {
-            const date = new Date(order.createdAt);
+          if (order.orderDate) {
+            const date = new Date(order.orderDate);
             const month = date.getMonth();
-            monthlyRevenue[month] += order.totalAmount || 0;
-            monthlyOrders[month] += 1;
+            if (!isNaN(month)) {
+              monthlyRevenue[month] += order.totalAmount;
+              monthlyOrders[month] += 1;
+            }
           }
+        });
+
+        // Category Share
+        const productCategoryMap = {};
+        products.forEach(p => {
+          productCategoryMap[p.id || p.Id] = p.categoryName || p.CategoryName || "Uncategorized";
         });
 
         const categoryCount = {};
         orders.forEach((order) => {
-          if (order.orderItems) {
-            order.orderItems.forEach((item) => {
-              const category = item.category || "Uncategorized";
-              categoryCount[category] = (categoryCount[category] || 0) + (item.quantity || 0);
-            });
-          }
+          order.items.forEach((item) => {
+            const pId = item.productId || item.ProductId;
+            const catName = productCategoryMap[pId] || item.categoryName || item.CategoryName || "Uncategorized";
+            const qty = Number(item.quantity || item.Quantity || 1);
+            categoryCount[catName] = (categoryCount[catName] || 0) + qty;
+          });
         });
 
         setCategoryChart({
@@ -98,10 +145,18 @@ export default function Dashboard() {
           data: Object.values(categoryCount),
         });
 
+        console.log("DASHBOARD EXTRACTED:", {
+          ordersCount: orders.length,
+          productsCount: products.length,
+          usersCount: usersList.length,
+          firstOrder: orders[0],
+          totalRevenue
+        });
+
         setStats({
           revenue: totalRevenue,
           orders: orders.length,
-          customers: new Set(orders.map(o => o.userId)).size,
+          customers: usersList.length,
           products: products.length,
           monthlyRevenue,
           monthlyOrders,
@@ -127,9 +182,7 @@ export default function Dashboard() {
       value: formattedRevenue,
       icon: <IndianRupee size={22} />,
       color: "text-emerald-600",
-      bg: "bg-emerald-50",
-      trend: "+12.5%",
-      isPostive: true
+      bg: "bg-emerald-50"
     },
     {
       title: "Orders Done",
@@ -137,8 +190,6 @@ export default function Dashboard() {
       icon: <ShoppingBag size={22} />,
       color: "text-purple-600",
       bg: "bg-purple-50",
-      trend: "+8.2%",
-      isPostive: true,
       onClick: () => navigate("/admin/orders")
     },
     {
@@ -147,8 +198,6 @@ export default function Dashboard() {
       icon: <Users size={22} />,
       color: "text-blue-600",
       bg: "bg-blue-50",
-      trend: "+5.4%",
-      isPostive: true,
       onClick: () => navigate("/admin/users")
     },
     {
@@ -157,8 +206,6 @@ export default function Dashboard() {
       icon: <Package size={22} />,
       color: "text-amber-600",
       bg: "bg-amber-50",
-      trend: "Stable",
-      isPostive: true,
       onClick: () => navigate("/admin/products")
     },
   ];
@@ -272,10 +319,6 @@ export default function Dashboard() {
             <div className="flex justify-between items-start mb-4">
               <div className={`${card.bg} ${card.color} p-3 rounded-2xl transition-transform group-hover:scale-110`}>
                 {card.icon}
-              </div>
-              <div className={`flex items-center gap-0.5 text-xs font-bold px-2 py-1 rounded-lg ${card.isPostive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                {card.isPostive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                {card.trend}
               </div>
             </div>
             <div>

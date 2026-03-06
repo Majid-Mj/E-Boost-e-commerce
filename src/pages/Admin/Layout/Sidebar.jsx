@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -15,6 +16,7 @@ import {
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const menuItems = [
     { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
@@ -23,11 +25,13 @@ export default function Sidebar({ isOpen, onClose }) {
     { name: "Users", path: "/admin/users", icon: <Users size={20} /> },
   ];
 
-  const handleLogout = () => {
-    if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.clear();
-      navigate("/login");
-    }
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    localStorage.clear();
+    navigate("/login");
   };
 
   const NavLink = ({ item, isMobile = false }) => {
@@ -76,7 +80,7 @@ export default function Sidebar({ isOpen, onClose }) {
           <p className="px-4 mb-2 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em]">System</p>
 
           <button
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className="flex items-center gap-3 w-full px-4 py-3 text-rose-400 font-bold hover:bg-rose-500/10 rounded-2xl transition-all"
           >
             <LogOut size={20} />
@@ -113,7 +117,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
         <div className="p-8 border-t border-slate-800/50">
           <button
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className="w-full flex items-center justify-center gap-3 bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-rose-900/20"
           >
             <LogOut size={20} />
@@ -121,6 +125,38 @@ export default function Sidebar({ isOpen, onClose }) {
           </button>
         </div>
       </div>
+
+      {/* Custom Logout Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogOut className="text-rose-600" size={32} />
+              </div>
+              <h2 className="text-2xl font-black text-slate-900 mb-2">Sign Out?</h2>
+              <p className="text-slate-500 font-bold mb-8">
+                Are you sure you want to end your current session?
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  className="flex-1 py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLogoutConfirm}
+                  className="flex-1 py-3.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl transition-colors shadow-lg shadow-rose-200"
+                >
+                  Yes, Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

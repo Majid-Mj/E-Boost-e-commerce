@@ -8,7 +8,16 @@ import { AuthContext } from "../contexts/AuthContext";
 // if someone manually types the path in the address bar.
 
 export default function AdminRoute({ children }) {
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#f8fafc]">
+        <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-slate-700 font-bold animate-pulse">Checking credentials...</p>
+      </div>
+    );
+  }
 
   // not logged in -> send to login
   if (!user) return <Navigate to="/login" replace />;
