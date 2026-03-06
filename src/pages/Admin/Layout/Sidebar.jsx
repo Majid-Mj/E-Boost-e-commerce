@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../contexts/AuthContext";
 import {
   LayoutDashboard,
   Package,
@@ -16,6 +17,7 @@ import {
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const menuItems = [
@@ -29,9 +31,9 @@ export default function Sidebar({ isOpen, onClose }) {
     setShowLogoutModal(true);
   };
 
-  const handleLogoutConfirm = () => {
-    localStorage.clear();
-    navigate("/login");
+  const handleLogoutConfirm = async () => {
+    await logout();
+    navigate("/");
   };
 
   const NavLink = ({ item, isMobile = false }) => {

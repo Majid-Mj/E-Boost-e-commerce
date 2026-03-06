@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Heart, Search } from "lucide-react";
+import { Heart, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { useCart } from "../../contexts/Cartcontext";
 import api from "../../config/api";
+
+const PAGE_SIZE = 12;
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -12,6 +14,7 @@ export default function Products() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const { addToCart, wishlist, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
@@ -74,7 +77,35 @@ export default function Products() {
       return true;
     });
 
-  // 🏷 Extract categories
+  // Reset to page 1 when filters/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, categoryFilter, priceFilter]);
+
+  // 📄 Pagination
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Generate page number buttons (show max 5 around current)
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  };
   const categories = Array.from(
     new Set(products.map((p) => p.categoryName).filter(Boolean))
   ).sort();
@@ -145,12 +176,28 @@ export default function Products() {
           </div>
         </div>
 
+        {/* Result count */}
+        {!loading && (
+          <p className="text-center text-gray-400 text-sm mb-6">
+            Showing{" "}
+            <span className="text-cyan-400 font-semibold">
+              {(currentPage - 1) * PAGE_SIZE + 1}–
+              {Math.min(currentPage * PAGE_SIZE, filteredProducts.length)}
+            </span>{" "}
+            of{" "}
+            <span className="text-cyan-400 font-semibold">
+              {filteredProducts.length}
+            </span>{" "}
+            products
+          </p>
+        )}
+
         {/* 🛒 Products Grid */}
         <div className="flex flex-wrap justify-center gap-6">
           {loading ? (
             <p className="text-gray-400">Loading products...</p>
-          ) : filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
+          ) : paginatedProducts.length > 0 ? (
+            paginatedProducts.map((product) => (
               <Link
                 to={`/product-details/${product.id}`}
                 key={product.id}
@@ -172,14 +219,16 @@ export default function Products() {
                   />
                 </button>
 
-                <img
-                  src={
-                    product.images?.[0]?.imageUrl ||
-                    "https://via.placeholder.com/200"
-                  }
-                  alt={product.name}
-                  className="w-full h-[180px] object-fit rounded-md mb-3"
-                />
+                <div className="w-full h-[180px] bg-gray-900 rounded-md mb-3 flex items-center justify-center overflow-hidden">
+                  <img
+                    src={
+                      product.images?.[0]?.imageUrl ||
+                      "https://via.placeholder.com/200"
+                    }
+                    alt={product.name}
+                    className="w-full h-full object-contain p-2"
+                  />
+                </div>
 
                 <h3 className="text-base font-medium mb-1 line-clamp-2 min-h-[48px]">
                   {product.name}
@@ -235,6 +284,74 @@ export default function Products() {
             <p className="text-center text-gray-400">No products found...</p>
           )}
         </div>
+
+        {/* 📄 Pagination Controls */}
+        {!loading && totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-12 flex-wrap">
+            {/* Previous */}
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="flex items-center gap-1 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition text-sm font-medium"
+            >
+              <ChevronLeft size={16} /> Prev
+            </button>
+
+            {/* First page + ellipsis */}
+            {getPageNumbers()[0] > 1 && (
+              <>
+                <button
+                  onClick={() => handlePageChange(1)}
+                  className="px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition text-sm font-medium"
+                >
+                  1
+                </button>
+                {getPageNumbers()[0] > 2 && (
+                  <span className="text-gray-500 px-1">…</span>
+                )}
+              </>
+            )}
+
+            {/* Page numbers */}
+            {getPageNumbers().map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${page === currentPage
+                    ? "bg-cyan-500 text-black"
+                    : "bg-gray-800 text-white hover:bg-gray-700"
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
+
+            {/* Last page + ellipsis */}
+            {getPageNumbers()[getPageNumbers().length - 1] < totalPages && (
+              <>
+                {getPageNumbers()[getPageNumbers().length - 1] < totalPages - 1 && (
+                  <span className="text-gray-500 px-1">…</span>
+                )}
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  className="px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition text-sm font-medium"
+                >
+                  {totalPages}
+                </button>
+              </>
+            )}
+
+            {/* Next */}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-1 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition text-sm font-medium"
+            >
+              Next <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
+
       </div>
       <Footer />
     </div>

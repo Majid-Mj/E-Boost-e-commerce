@@ -2,13 +2,11 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
-import { FaUser, FaEnvelope, FaUserTag, FaLock, FaSignOutAlt } from "react-icons/fa";
-import ChangePasswordModal from "../../Components/ChangePassword";
+import { FaUser, FaEnvelope, FaUserTag, FaSignOutAlt } from "react-icons/fa";
 import { AuthContext } from "../../contexts/AuthContext";
 
 export default function User() {
   const { user, logout } = useContext(AuthContext);
-  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -86,12 +84,6 @@ export default function User() {
           </div>
 
           <div className="mt-6 space-y-3">
-            <button
-              onClick={() => setShowModal(true)}
-              className="w-full bg-[#333041]/80 hover:bg-[#413b55] transition p-3 rounded-lg flex items-center justify-center gap-2 text-sm border border-gray-700"
-            >
-              <FaLock /> Change Password
-            </button>
 
             {user.roleId === 1 && (
               <Link to="/orders">
@@ -114,12 +106,7 @@ export default function User() {
         </div>
       </div>
 
-      {showModal && (
-        <ChangePasswordModal
-          user={user}
-          onClose={() => setShowModal(false)}
-        />
-      )}
+
 
       <Footer />
     </div>

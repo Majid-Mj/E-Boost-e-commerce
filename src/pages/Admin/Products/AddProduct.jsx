@@ -9,7 +9,6 @@ export default function AddProduct() {
 
   const [formData, setFormData] = useState({
     name: "",
-    description: "",
     categoryId: "",
     price: "",
     stock: "",
@@ -65,7 +64,6 @@ export default function AddProduct() {
       const formDataToSend = new FormData();
 
       formDataToSend.append("name", formData.name);
-      formDataToSend.append("description", formData.description);
       formDataToSend.append("categoryId", formData.categoryId);
       formDataToSend.append("price", formData.price);
       formDataToSend.append("stock", formData.stock);
@@ -118,15 +116,7 @@ export default function AddProduct() {
             className="w-full px-3 py-2 border rounded-md"
           />
 
-          {/* Description */}
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded-md"
-          />
+
 
           {/* Price */}
           <input
@@ -208,7 +198,7 @@ export default function AddProduct() {
             )}
           </div>
 
-          
+
 
         </div>
 

@@ -217,6 +217,7 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Eye, EyeOff } from "lucide-react";
 import api from "../../config/api";
 import { AuthContext } from "../../contexts/AuthContext";
 
@@ -232,6 +233,7 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -377,14 +379,23 @@ export default function Login() {
                 Password
               </label>
             </div>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:ring-2 focus:ring-cyan-400"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                className="w-full p-3 pr-10 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:ring-2 focus:ring-cyan-400 outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
             {touched.password && errors.password ? (
               <p className="text-red-400 text-sm mt-1">
                 {errors.password}

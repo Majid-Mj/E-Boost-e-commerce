@@ -35,7 +35,6 @@ export default function ProductList() {
     categoryId: "",
     price: "",
     stock: "",
-    description: "",
     isFeatured: false,
   });
 
@@ -117,7 +116,6 @@ export default function ProductList() {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
-      formDataToSend.append("description", formData.description);
       formDataToSend.append("categoryId", formData.categoryId);
       formDataToSend.append("price", formData.price);
       formDataToSend.append("stock", formData.stock);
@@ -139,7 +137,6 @@ export default function ProductList() {
         categoryId: "",
         price: "",
         stock: "",
-        description: "",
         isFeatured: false,
       });
       fetchProducts();
@@ -278,18 +275,7 @@ export default function ProductList() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 ml-1">Description</label>
-              <textarea
-                name="description"
-                placeholder="Enter detailed product description..."
-                value={formData.description}
-                onChange={handleChange}
-                required
-                rows="3"
-                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-slate-50 font-medium"
-              />
-            </div>
+
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700 ml-1">Product Images</label>

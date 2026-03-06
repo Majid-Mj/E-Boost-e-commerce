@@ -12,7 +12,7 @@ export default function ProductsView() {
   // Fetch maximum of 4 products to display as "Featured"
   useEffect(() => {
     api
-      .get("/products/paged?page=1&pageSize=4")
+      .get("/products/paged?page=1&pageSize=15")
       .then((res) => {
         // Handle standard response or ApiResponseFilter wrapped response
         let fetchedProducts = res.data.data?.items || res.data?.items || [];
@@ -82,11 +82,13 @@ export default function ProductsView() {
                   />
                 </button>
 
-                <img
-                  src={displayImage}
-                  alt={product.name}
-                  className="w-full h-[160px] object-cover rounded-md mb-3"
-                />
+                <div className="w-full h-[160px] bg-gray-900 rounded-md mb-3 flex items-center justify-center overflow-hidden">
+                  <img
+                    src={displayImage}
+                    alt={product.name}
+                    className="w-full h-full object-contain p-2"
+                  />
+                </div>
 
                 <h3 className="text-base font-medium mb-1 line-clamp-2 min-h-[48px]">
                   {product.name}
