@@ -3,15 +3,7 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
 export default function ProtectedRoute({ children, role }) {
-  const { user, loading } = useContext(AuthContext);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="w-10 h-10 border-4 border-slate-300 border-t-slate-800 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+  const { user } = useContext(AuthContext);
 
   // Not logged in
   if (!user) {

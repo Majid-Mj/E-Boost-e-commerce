@@ -74,7 +74,8 @@ export default function AdminOrders() {
           productId: item.productId || item.ProductId,
           productName: item.productName || item.ProductName || "Unknown Product",
           quantity: item.quantity || item.Quantity || 0,
-          unitPrice: item.unitPrice || item.UnitPrice || 0
+          unitPrice: item.unitPrice || item.UnitPrice || 0,
+          status: item.status || item.Status || "Pending"
         })),
         totalAmount: order.totalAmount || order.TotalAmount || 0,
         shippingStreet: order.shippingStreet || order.ShippingStreet || "",
@@ -132,26 +133,32 @@ export default function AdminOrders() {
     setFilteredOrders(result);
   }, [searchQuery, statusFilter, orders]);
 
-  // ✅ Update Status
-  const updateOrderStatus = async (orderId, newStatus) => {
+  // ✅ Update Product Status
+  const updateOrderItemStatus = async (orderId, productId, newStatus) => {
     try {
-      const updatePromise = api.patch(`/Order/${orderId}/status?status=${newStatus}`);
+      const updatePromise = api.patch(`/Order/${orderId}/items/${productId}/status?status=${newStatus}`);
 
       toast.promise(updatePromise, {
-        loading: 'Updating status...',
-        success: 'Order status updated!',
+        loading: 'Updating product status...',
+        success: 'Status updated successfully!',
         error: 'Failed to update status'
       });
 
       await updatePromise;
 
       setOrders((prev) =>
-        prev.map((order) =>
-          order.id === orderId ? { ...order, status: newStatus } : order
-        )
+        prev.map((order) => {
+          if (order.id === orderId) {
+            const updatedItems = order.items.map(item =>
+              item.productId === productId ? { ...item, status: newStatus } : item
+            );
+            return { ...order, items: updatedItems };
+          }
+          return order;
+        })
       );
     } catch (err) {
-      console.error("Error updating order status:", err);
+      console.error("Error updating order item status:", err);
     }
   };
 
@@ -236,94 +243,85 @@ export default function AdminOrders() {
               <tr className="bg-slate-100">
                 <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Order ID</th>
                 <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Customer</th>
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Items & Products</th>
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Total Amount</th>
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Product</th>
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Amount</th>
                 <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Date & Time</th>
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200 text-center">Status</th>
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200 text-center">Product Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-50/80 transition-all duration-200 group">
-                    <td className="px-6 py-5 whitespace-nowrap border-b border-slate-50">
-                      <div className="flex items-center">
-                        <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded-md text-xs font-bold border border-purple-100">
-                          #{order.id}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-6 border-b border-slate-100">
-                      <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white font-bold text-base shadow-md">
-                          {order.shippingFullName?.charAt(0) || "U"}
+                filteredOrders.flatMap((order) =>
+                  order.items?.map((item, idx) => (
+                    <tr key={`${order.id}-${item.productId}-${idx}`} className="hover:bg-slate-50/80 transition-all duration-200 group">
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-50">
+                        <div className="flex flex-col gap-1 items-start">
+                          <span className="bg-purple-50 text-purple-700 px-2.5 py-1 rounded-md text-[13px] font-bold border border-purple-100">
+                            #{order.id}
+                          </span>
                         </div>
-                        <div>
-                          <div className="text-[15px] font-bold text-slate-900 leading-tight">{order.shippingFullName}</div>
-                          <div className="text-[13px] text-slate-600 font-semibold mt-1 flex items-center gap-1">
-                            <Phone size={12} className="text-slate-400" />
+                      </td>
+                      <td className="px-6 py-4 border-b border-slate-100 min-w-[200px]">
+                        <div className="flex flex-col">
+                          <div className="text-[14px] font-bold text-slate-900 leading-tight">{order.shippingFullName}</div>
+                          <div className="text-[12px] text-slate-500 font-semibold mt-0.5 flex items-center gap-1">
+                            <Phone size={10} className="text-slate-400" />
                             {order.shippingPhone}
                           </div>
+                          {(order.shippingStreet || order.shippingCity || order.shippingState) && (
+                            <div className="text-[11px] text-slate-500 mt-1 flex items-start gap-1">
+                              <MapPin size={10} className="text-slate-400 mt-0.5 shrink-0" />
+                              <span className="line-clamp-2 leading-tight">
+                                {[order.shippingStreet, order.shippingCity, order.shippingState].filter(Boolean).join(", ")}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-6 border-b border-slate-100 max-w-xs">
-                      <div className="flex flex-col gap-2">
-                        {order.items?.slice(0, 2).map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-[13px]">
-                            <span className="bg-slate-100 text-slate-700 w-6 h-6 rounded flex items-center justify-center font-bold shrink-0 border border-slate-200">
-                              {item.quantity}
-                            </span>
-                            <span className="text-slate-800 font-semibold truncate mt-0.5">{item.productName}</span>
-                          </div>
-                        ))}
-                        {order.items?.length > 2 && (
-                          <div className="text-xs text-purple-600 font-bold ml-7">
-                            + {order.items.length - 2} more items
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap border-b border-slate-100">
-                      <div className="text-[15px] font-bold text-emerald-700">
-                        ₹{order.totalAmount?.toLocaleString()}
-                      </div>
-                      <div className="text-xs text-slate-500 font-semibold mt-0.5">Payment Completed</div>
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap border-b border-slate-100">
-                      <div className="text-[14px] font-bold text-slate-900 flex items-center gap-1.5">
-                        <Calendar size={14} className="text-slate-500" />
-                        {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}
-                      </div>
-                      <div className="text-[12px] text-slate-600 font-semibold mt-1 flex items-center gap-1.5 ml-5">
-                        {order.orderDate ? new Date(order.orderDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                      </div>
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap border-b border-slate-100">
-                      <div className="flex justify-center">
-                        <div className="relative group/select w-full max-w-[150px]">
-                          <select
-                            value={order.status}
-                            onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                            className={`appearance-none w-full border rounded-xl pl-9 pr-4 py-2 text-[13px] font-bold cursor-pointer transition-all outline-none border-transparent shadow-sm ${getStatusColor(order.status)} hover:scale-105`}
-                          >
-                            <option value="Pending">Pending</option>
-                            <option value="Confirmed">Confirmed</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                          </select>
-                          <div className={`absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none`}>
-                            {getStatusIcon(order.status)}
-                          </div>
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
-                            <ChevronDown size={12} />
+                      </td>
+                      <td className="px-6 py-4 border-b border-slate-100 max-w-[250px]">
+                        <div className="flex items-center gap-2">
+                          <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded flex items-center justify-center font-bold shrink-0 border border-slate-200 text-xs">
+                            {item.quantity}x
+                          </span>
+                          <span className="text-slate-800 font-bold text-[13px] truncate">{item.productName}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100">
+                        <div className="text-[14px] font-bold text-emerald-700">
+                          ₹{item.unitPrice ? (item.unitPrice * item.quantity).toLocaleString() : order.totalAmount?.toLocaleString()}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100">
+                        <div className="text-[13px] font-bold text-slate-900 flex items-center gap-1.5">
+                          {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100">
+                        <div className="flex justify-center">
+                          <div className="relative group/select w-full max-w-[140px]">
+                            <select
+                              value={item.status || "Pending"}
+                              onChange={(e) => updateOrderItemStatus(order.id, item.productId, e.target.value)}
+                              className={`appearance-none w-full border rounded-lg pl-8 pr-4 py-1.5 text-[12px] font-bold cursor-pointer transition-all outline-none border-transparent shadow-sm ${getStatusColor(item.status || "Pending")} hover:scale-[1.02]`}
+                            >
+                              <option value="Pending">Pending</option>
+                              <option value="Confirmed">Confirmed</option>
+                              <option value="Shipped">Shipped</option>
+                              <option value="Delivered">Delivered</option>
+                              <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <div className={`absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none`}>
+                              {getStatusIcon(item.status || "Pending")}
+                            </div>
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <ChevronDown size={12} className="opacity-60" />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                    </tr>
+                  ))
+                )
               ) : (
                 <tr>
                   <td colSpan="6" className="px-6 py-20 text-center">

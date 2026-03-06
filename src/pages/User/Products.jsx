@@ -218,7 +218,7 @@ export default function Products() {
                       e.preventDefault();
                       if (product.stock > 0) {
                         // Pass the product in state so the address/checkout page knows what is being bought immediately
-                        navigate("/cart/address", { state: { buyNowProduct: [product] } });
+                        navigate("/cart/address", { state: { buyNowProduct: product, buyNowQuantity: 1 } });
                       }
                     }}
                     className={`flex-1 py-2 rounded-md text-sm font-medium transition ${product.stock === 0

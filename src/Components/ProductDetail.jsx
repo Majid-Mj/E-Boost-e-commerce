@@ -90,7 +90,7 @@ export default function ProductDetail() {
             </button>
 
             <button
-              onClick={() => navigate("/cart/address", { state: { buyNowProduct: { id: product.id, quantity: 1 } } })}
+              onClick={() => navigate("/cart/address", { state: { buyNowProduct: product, buyNowQuantity: 1 } })}
               disabled={isOutOfStock}
               className={`border px-6 py-3 rounded-md transition ${isOutOfStock
                 ? "border-gray-600 text-gray-400 cursor-not-allowed"

@@ -169,7 +169,12 @@ export default function AddressPage() {
 
     // Optional: Pass buyNow product context forward if it came from the buyNow button
     if (location.state?.buyNowProduct) {
-      navigate("/payment", { state: { buyNowProduct: location.state.buyNowProduct } });
+      navigate("/payment", {
+        state: {
+          buyNowProduct: location.state.buyNowProduct,
+          buyNowQuantity: location.state.buyNowQuantity
+        }
+      });
     } else {
       navigate("/payment"); // Navigate to payment page for normal cart flow
     }

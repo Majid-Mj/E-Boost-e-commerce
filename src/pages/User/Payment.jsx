@@ -71,7 +71,7 @@ export default function Payment() {
     }
 
     clearCart();
-    navigate("/payment-success");
+    navigate("/payment-success", { state: { method: paymentMethod } });
   };
 
   let totalPrice = 0;
@@ -266,7 +266,7 @@ export default function Payment() {
                   disabled={!address.fullName || totalItems === 0}
                   className="w-full bg-emerald-500 text-black py-4 rounded-xl font-bold text-lg hover:bg-emerald-400 transition shadow-[0_4px_14px_rgba(16,185,129,0.25)] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Pay ₹{totalPrice.toFixed(2)}
+                  {paymentMethod === 'cod' ? 'Proceed to Order' : `Pay ₹${totalPrice.toFixed(2)}`}
                 </button>
 
                 <p className="text-center text-gray-500 text-xs mt-4 flex items-center justify-center gap-1">
