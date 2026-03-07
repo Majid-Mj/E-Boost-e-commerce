@@ -205,11 +205,16 @@ export default function UserList() {
                     <td className="px-6 py-6 border-b border-slate-100">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-slate-100 to-slate-200 flex items-center justify-center text-slate-600 font-bold text-lg border border-slate-200 shadow-sm transition-transform group-hover:scale-105">
-                          {user.name?.charAt(0) || <User size={20} />}
+                          {(user.fullName || user.name || user.FullName || user.Name)?.charAt(0) || <User size={20} />}
                         </div>
                         <div>
-                          <div className="text-[15px] font-bold text-slate-900 leading-tight">{user.name}</div>
+                          <div className="text-[15px] font-bold text-slate-900 leading-tight">
+                            {user.fullName || user.name || user.FullName || user.Name || "User"}
+                          </div>
                           <div className="flex items-center gap-1.5 mt-1">
+                            <span className="text-[10px] font-bold bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded border border-purple-100 uppercase tracking-wider">
+                              {user.role}
+                            </span>
                             <span className="text-[11px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200">
                               ID: #{user.id?.toString().slice(-6)}
                             </span>

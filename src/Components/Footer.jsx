@@ -110,7 +110,7 @@ const Footer = () => {
         {/* Divider */}
         <div className="border-t border-gray-700 mt-10 pt-6 text-center">
           <p className="text-gray-400 text-sm">
-            &copy; 2025{" "}
+            &copy; 2026{" "}
             <span className="text-[#00FFFF] font-semibold">Eboost</span>. All
             rights reserved.
           </p>

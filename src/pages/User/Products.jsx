@@ -177,21 +177,7 @@ export default function Products() {
           </div>
         </div>
 
-        {/* Result count */}
-        {!loading && (
-          <p className="text-center text-gray-400 text-sm mb-6">
-            Showing{" "}
-            <span className="text-cyan-400 font-semibold">
-              {(currentPage - 1) * PAGE_SIZE + 1}–
-              {Math.min(currentPage * PAGE_SIZE, filteredProducts.length)}
-            </span>{" "}
-            of{" "}
-            <span className="text-cyan-400 font-semibold">
-              {filteredProducts.length}
-            </span>{" "}
-            products
-          </p>
-        )}
+
 
         {/* 🛒 Products Grid */}
         <div className="flex flex-wrap justify-center gap-6">

@@ -66,7 +66,7 @@ export default function Cart() {
         {cart.length === 0 ? (
           <div className="max-w-4xl mx-auto text-center pt-20">
             <h2 className="text-3xl font-semibold mb-10 text-[#00FFFF]">
-              🛒 Your Cart is Empty
+               Your Cart is Empty
             </h2>
             <p className="text-gray-400 mb-6">Add some products to get started!</p>
             <Link to="/products">
@@ -78,7 +78,7 @@ export default function Cart() {
         ) : (
           <div className="max-w-6xl mx-auto">
             <h1 className="text-3xl font-semibold mb-10 text-[#00FFFF]">
-              🛒 My Cart ({getTotalItems()} items)
+               My Cart ({getTotalItems()} items)
             </h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -34,6 +34,9 @@ export default function AdminOrders() {
     revenue: 0
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
+
   // ✅ Fetch from real backend
   const fetchOrders = async () => {
     try {
@@ -132,6 +135,21 @@ export default function AdminOrders() {
 
     setFilteredOrders(result);
   }, [searchQuery, statusFilter, orders]);
+
+  // ✅ Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
+
+  const flattenedItems = filteredOrders.flatMap((order) =>
+    (order.items || []).map((item) => ({ ...item, parentOrder: order }))
+  );
+
+  const totalPages = Math.ceil(flattenedItems.length / PAGE_SIZE);
+  const paginatedItems = flattenedItems.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   // ✅ Update Product Status
   const updateOrderItemStatus = async (orderId, productId, newStatus) => {
@@ -250,9 +268,10 @@ export default function AdminOrders() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {filteredOrders.length > 0 ? (
-                filteredOrders.flatMap((order) =>
-                  order.items?.map((item, idx) => (
+              {paginatedItems.length > 0 ? (
+                paginatedItems.map((item, idx) => {
+                  const order = item.parentOrder;
+                  return (
                     <tr key={`${order.id}-${item.productId}-${idx}`} className="hover:bg-slate-50/80 transition-all duration-200 group">
                       <td className="px-6 py-4 whitespace-nowrap border-b border-slate-50">
                         <div className="flex flex-col gap-1 items-start">
@@ -320,8 +339,8 @@ export default function AdminOrders() {
                         </div>
                       </td>
                     </tr>
-                  ))
-                )
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan="6" className="px-6 py-20 text-center">
@@ -343,14 +362,27 @@ export default function AdminOrders() {
           </table>
         </div>
 
-        {/* Pagination Placeholder */}
+        {/* Pagination Controls */}
         <div className="bg-white px-6 py-4 border-t border-slate-100 flex items-center justify-between">
           <p className="text-sm text-slate-500">
-            Showing <span className="font-bold text-slate-900">{filteredOrders.length}</span> results
+            Showing <span className="font-bold text-slate-900">{paginatedItems.length}</span> of <span className="font-bold text-slate-900">{flattenedItems.length}</span> results
           </p>
           <div className="flex items-center gap-2">
-            <button className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-400 font-bold text-xs cursor-not-allowed">Previous</button>
-            <button className="px-4 py-2 bg-purple-600 border border-purple-600 rounded-lg text-white font-bold text-xs hover:bg-purple-700 transition-colors">Next</button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 border rounded-lg font-bold text-xs transition-colors ${currentPage === 1 ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed" : "bg-white border-slate-300 text-slate-700 hover:bg-slate-50"}`}
+            >
+              Previous
+            </button>
+            <span className="text-xs font-bold text-slate-600 px-2">Page {currentPage} of {totalPages || 1}</span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`px-4 py-2 border rounded-lg font-bold text-xs transition-colors ${currentPage === totalPages || totalPages === 0 ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed" : "bg-purple-600 border-purple-600 text-white hover:bg-purple-700"}`}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
