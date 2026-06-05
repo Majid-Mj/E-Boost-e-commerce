@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/Cartcontext";
 import api from "../config/api";
+import { getCloudinaryUrl } from "../utils/cloudinary";
 
 export default function ProductsView() {
   const [products, setProducts] = useState([]);
-  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist, wishlist } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist, wishlist } = useCart();
 
   // Fetch maximum of 4 products to display as "Featured"
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function ProductsView() {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.images?.[0]?.imageUrl || "/assets/placeholder.jpg",
+        image: product.images?.[0]?.imageUrl || product.image || "/assets/placeholder.jpg",
         description:
           product.description ||
           "High-quality product for gamers and enthusiasts.",
@@ -49,8 +49,8 @@ export default function ProductsView() {
   };
 
   return (
-    <div className="py-10 bg-gradient-to-b from-black via-gray-900 to-black text-white mt-20">
-      <h2 className="text-3xl font-semibold text-center mb-10 text-[#00FFFF]">
+    <div className="py-10 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 mt-20 transition-colors duration-300">
+      <h2 className="text-3xl font-black text-center mb-10 text-slate-800 dark:text-white font-title uppercase tracking-wide">
         Featured Products
       </h2>
 
@@ -59,30 +59,30 @@ export default function ProductsView() {
           products.map((product) => {
             const originalPrice = product.originalPrice || product.price; // Fallback if no original price is provided by DTO
             const discount = calculateDiscount(originalPrice, product.price);
-            const displayImage = product.images?.[0]?.imageUrl || "/assets/placeholder.jpg";
+            const displayImage = getCloudinaryUrl(product.images?.[0]?.imageUrl || product.image);
             return (
               <Link
                 to={`/product-details/${product.id}`}
                 key={product.id}
-                className="bg-gray-800 p-3 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-[240px] relative overflow-hidden block"
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3 rounded-lg shadow-sm hover:shadow-lg hover:border-[#ff512f]/30 dark:hover:border-[#ff512f]/30 hover:bg-white dark:hover:bg-slate-950 transition-all duration-300 w-[240px] relative overflow-hidden block"
               >
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     toggleWishlist(product);
                   }}
-                  className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full hover:bg-gray-600 transition"
+                  className="absolute top-2 right-2 p-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition z-20"
                 >
                   <Heart
-                    size={18}
+                    size={16}
                     className={`${isInWishlist(product.id)
                       ? "fill-red-500 text-red-500"
-                      : "text-gray-400"
+                      : "text-slate-400"
                       }`}
                   />
                 </button>
 
-                <div className="w-full h-[160px] bg-gray-900 rounded-md mb-3 flex items-center justify-center overflow-hidden">
+                <div className="w-full h-[160px] bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-md mb-3 flex items-center justify-center overflow-hidden">
                   <img
                     src={displayImage}
                     alt={product.name}
@@ -90,23 +90,23 @@ export default function ProductsView() {
                   />
                 </div>
 
-                <h3 className="text-base font-medium mb-1 line-clamp-2 min-h-[48px]">
+                <h3 className="text-sm font-bold mb-1 text-slate-800 dark:text-slate-200 line-clamp-2 min-h-[40px]">
                   {product.name}
                 </h3>
 
                 <div className="flex items-center mb-3 min-h-[28px]">
-                  <p className="text-[#00FFFF] text-lg font-bold mr-2">
-                    ₹{product.price.toFixed(2)}
+                  <p className="text-[#ff512f] text-lg font-black font-title mr-2">
+                    ₹{product.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                   {originalPrice > product.price && (
-                    <p className="text-gray-400 line-through text-xs">
-                      ₹{originalPrice}
+                    <p className="text-slate-400 dark:text-slate-500 line-through text-xs font-semibold">
+                      ₹{originalPrice.toLocaleString()}
                     </p>
                   )}
                 </div>
 
                 <div className="flex justify-center gap-2">
-                  <span className="text-cyan-400 hover:text-cyan-300 transition text-sm font-medium underline">
+                  <span className="text-[#ff512f] hover:text-[#dd2476] transition text-xs font-bold uppercase tracking-wider">
                     View Product
                   </span>
                 </div>
@@ -114,13 +114,13 @@ export default function ProductsView() {
             );
           })
         ) : (
-          <p className="text-center text-gray-400">Loading products...</p>
+          <p className="text-center text-slate-400">Loading products...</p>
         )}
       </div>
 
       <div className="text-center mt-10">
         <Link to="/products">
-          <button className="px-6 py-3 bg-[#00FFFF] hover:bg-cyan-400 text-black rounded-lg font-semibold transition">
+          <button className="px-6 py-3 bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white rounded-lg font-bold uppercase tracking-wider text-xs transition shadow-md shadow-orange-500/10 hover:opacity-95">
             View More Products
           </button>
         </Link>

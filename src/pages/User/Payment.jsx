@@ -6,17 +6,15 @@ import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import { CreditCard, Smartphone, Banknote, ShieldCheck } from "lucide-react";
 
-
 export default function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
   const [paymentMethod, setPaymentMethod] = useState("card");
-  const { cart, clearCart, placeOrderFromCart, buyNow, getTotalItems, getTotalPrice } = useCart();
-
+  const { clearCart, placeOrderFromCart, buyNow, getTotalItems, getTotalPrice } = useCart();
 
   const savedAddress = JSON.parse(localStorage.getItem("userAddress")) || {};
 
-  const [address, setAddress] = useState({
+  const [address] = useState({
     fullName: savedAddress.fullName || savedAddress.name || "",
     phone: savedAddress.phoneNumber || savedAddress.phone || "",
     street: savedAddress.street || "",
@@ -40,8 +38,8 @@ export default function Payment() {
       toast.error("Please fill all address fields", {
         position: "bottom-left",
         style: {
-          background: "#1f1b2e",
-          color: "#ff6666",
+          background: "#1e293b",
+          color: "#f87171",
           fontWeight: "bold",
         },
       });
@@ -86,54 +84,53 @@ export default function Payment() {
     totalItems = getTotalItems();
   }
 
-
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-black via-gray-900 to-black text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 text-left">
       <Navbar />
 
-      <main className="flex-grow py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl font-semibold mb-8 text-[#00FFFF]">
+      <main className="flex-grow py-24 px-4 text-left">
+        <div className="max-w-6xl mx-auto text-left">
+          <h1 className="text-3xl font-black mb-8 font-title uppercase tracking-wide text-slate-850 dark:text-white">
             Checkout Process
           </h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
 
             {/* Left Column: Form & Address */}
-            <div className="lg:col-span-2 space-y-8">
-              <form id="payment-form" onSubmit={handlePayment} className="space-y-8">
+            <div className="lg:col-span-2 space-y-8 text-left">
+              <form id="payment-form" onSubmit={handlePayment} className="space-y-8 text-left">
 
                 {/* Section 1: Address */}
-                <div className="bg-[#1f1b2e] p-6 rounded-2xl border border-gray-800 shadow-lg">
-                  <h2 className="text-lg font-medium mb-4 text-[#00FFFF] border-b border-gray-700 pb-2">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                  <h2 className="text-base font-bold uppercase tracking-wider mb-4 text-[#ff512f] border-b border-slate-100 dark:border-slate-800 pb-2 text-left">
                     1. Delivery Address
                   </h2>
 
                   {address.fullName ? (
-                    <div className="bg-[#2a243a] p-3 rounded-lg border border-gray-600">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-white text-sm">{address.fullName}</h3>
-                          <p className="text-gray-400 text-sm mt-1">{address.street}, {address.city}</p>
-                          <p className="text-gray-400 text-sm">{address.state}, {address.zip}, {address.country}</p>
-                          <p className="text-gray-400 mt-1 font-medium text-sm">Phone: {address.phone}</p>
+                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-850 text-left">
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="text-left">
+                          <h3 className="font-bold text-slate-800 dark:text-slate-200 text-base">{address.fullName}</h3>
+                          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1.5">{address.street}, {address.city}</p>
+                          <p className="text-slate-500 dark:text-slate-400 text-xs">{address.state}, {address.zip}, {address.country}</p>
+                          <p className="text-slate-700 dark:text-slate-350 text-xs font-bold mt-2">Phone: {address.phone}</p>
                         </div>
                         <button
                           type="button"
                           onClick={() => navigate('/cart/address')}
-                          className="text-[#00FFFF] text-sm hover:underline"
+                          className="text-[#ff512f] text-xs font-bold uppercase tracking-wider hover:underline"
                         >
                           Change
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-red-500/10 border border-red-500/50 p-6 rounded-xl text-center">
-                      <p className="text-red-400 font-medium mb-3">You haven't selected a delivery address.</p>
+                    <div className="bg-red-500/10 border border-red-550/20 p-6 rounded-xl text-center">
+                      <p className="text-red-500 dark:text-red-400 text-sm font-bold uppercase tracking-wide mb-3">You haven't selected a delivery address.</p>
                       <button
                         type="button"
                         onClick={() => navigate('/cart/address')}
-                        className="bg-[#00FFFF] text-black px-6 py-2 rounded-lg font-semibold hover:bg-cyan-400 transition"
+                        className="px-6 py-2 rounded-xl text-white font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-[#ff512f] to-[#dd2476]"
                       >
                         Select Address
                       </button>
@@ -142,56 +139,56 @@ export default function Payment() {
                 </div>
 
                 {/* Section 2: Payment Method */}
-                <div className="bg-[#1f1b2e] p-6 rounded-2xl border border-gray-800 shadow-lg">
-                  <h2 className="text-lg font-medium mb-4 text-[#00FFFF] border-b border-gray-700 pb-2">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                  <h2 className="text-base font-bold uppercase tracking-wider mb-4 text-[#ff512f] border-b border-slate-100 dark:border-slate-800 pb-2 text-left">
                     2. Payment Method
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
                     {/* Card Option */}
-                    <label className={`cursor-pointer border rounded-lg p-3 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'card' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_10px_rgba(0,255,255,0.15)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
+                    <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'card' ? 'border-[#ff512f] bg-[#ff512f]/5 shadow-sm transform -translate-y-0.5' : 'border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700'}`}>
                       <input type="radio" className="hidden" name="method" value="card" checked={paymentMethod === 'card'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-2 rounded-full transition-colors ${paymentMethod === 'card' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
-                        <CreditCard size={20} />
+                      <div className={`p-2.5 rounded-full transition-colors ${paymentMethod === 'card' ? 'bg-[#ff512f] text-white' : 'bg-slate-200 dark:bg-slate-805 text-[#ff512f]'}`}>
+                        <CreditCard size={18} />
                       </div>
-                      <span className="font-medium text-center text-sm text-gray-200">Credit / Debit</span>
+                      <span className="font-bold text-center text-xs uppercase tracking-wider text-slate-700 dark:text-gray-250">Credit / Debit</span>
                     </label>
 
                     {/* UPI Option */}
-                    <label className={`cursor-pointer border rounded-lg p-3 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'upi' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_10px_rgba(0,255,255,0.15)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
+                    <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'upi' ? 'border-[#ff512f] bg-[#ff512f]/5 shadow-sm transform -translate-y-0.5' : 'border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700'}`}>
                       <input type="radio" className="hidden" name="method" value="upi" checked={paymentMethod === 'upi'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-2 rounded-full transition-colors ${paymentMethod === 'upi' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
-                        <Smartphone size={20} />
+                      <div className={`p-2.5 rounded-full transition-colors ${paymentMethod === 'upi' ? 'bg-[#ff512f] text-white' : 'bg-slate-200 dark:bg-slate-805 text-[#ff512f]'}`}>
+                        <Smartphone size={18} />
                       </div>
-                      <span className="font-medium text-center text-sm text-gray-200">UPI App</span>
+                      <span className="font-bold text-center text-xs uppercase tracking-wider text-slate-700 dark:text-gray-250">UPI App</span>
                     </label>
 
                     {/* COD Option */}
-                    <label className={`cursor-pointer border rounded-lg p-3 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'cod' ? 'border-[#00FFFF] bg-[#2a243a] shadow-[0_0_10px_rgba(0,255,255,0.15)] transform -translate-y-1' : 'border-gray-700 bg-[#211c30] hover:border-gray-500 hover:bg-[#2a243a]/50'}`}>
+                    <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'cod' ? 'border-[#ff512f] bg-[#ff512f]/5 shadow-sm transform -translate-y-0.5' : 'border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700'}`}>
                       <input type="radio" className="hidden" name="method" value="cod" checked={paymentMethod === 'cod'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-2 rounded-full transition-colors ${paymentMethod === 'cod' ? 'bg-[#00FFFF] text-black' : 'bg-[#352f44] text-[#00FFFF]'}`}>
-                        <Banknote size={20} />
+                      <div className={`p-2.5 rounded-full transition-colors ${paymentMethod === 'cod' ? 'bg-[#ff512f] text-white' : 'bg-slate-200 dark:bg-slate-805 text-[#ff512f]'}`}>
+                        <Banknote size={18} />
                       </div>
-                      <span className="font-medium text-center text-sm text-gray-200">Cash on Delivery</span>
+                      <span className="font-bold text-center text-xs uppercase tracking-wider text-slate-700 dark:text-gray-250">Cash on Delivery</span>
                     </label>
                   </div>
 
                   {/* Dynamic Sub-forms */}
-                  <div className="mt-6">
+                  <div className="mt-6 text-left">
                     {paymentMethod === "card" && (
-                      <div className="p-5 rounded-xl bg-gray-900/50 border border-gray-700 space-y-4">
+                      <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 space-y-4 text-left">
                         <input
                           type="text"
                           placeholder="Cardholder Name"
-                          className="w-full p-3 rounded-lg bg-[#2a243a] border border-gray-600 text-white focus:outline-none focus:border-[#00FFFF]"
+                          className="w-full p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
                           required
                         />
                         <div className="relative">
-                          <CreditCard size={20} className="absolute left-3 top-3.5 text-gray-400" />
+                          <CreditCard size={18} className="absolute left-3 top-3.5 text-slate-400" />
                           <input
                             type="text"
                             placeholder="Card Number"
-                            className="w-full p-3 pl-10 rounded-lg bg-[#2a243a] border border-gray-600 text-white focus:outline-none focus:border-[#00FFFF]"
+                            className="w-full p-3 pl-10 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-855 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
                             required
                           />
                         </div>
@@ -199,13 +196,13 @@ export default function Payment() {
                           <input
                             type="text"
                             placeholder="MM/YY"
-                            className="w-1/2 p-3 rounded-lg bg-[#2a243a] border border-gray-600 text-white focus:outline-none focus:border-[#00FFFF]"
+                            className="w-1/2 p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-855 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
                             required
                           />
                           <input
                             type="text"
                             placeholder="CVV"
-                            className="w-1/2 p-3 rounded-lg bg-[#2a243a] border border-gray-600 text-white focus:outline-none focus:border-[#00FFFF]"
+                            className="w-1/2 p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-855 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
                             required
                           />
                         </div>
@@ -213,23 +210,23 @@ export default function Payment() {
                     )}
 
                     {paymentMethod === "upi" && (
-                      <div className="p-5 rounded-xl bg-gray-900/50 border border-gray-700">
-                        <label className="block text-gray-400 mb-2 text-sm">Enter your Virtual Payment Address (VPA)</label>
+                      <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 text-left">
+                        <label className="block text-slate-500 dark:text-slate-400 mb-2 text-xs font-bold uppercase tracking-wider">Enter your Virtual Payment Address (VPA)</label>
                         <input
                           type="text"
                           placeholder="e.g. username@bank"
-                          className="w-full p-3 rounded-lg bg-[#2a243a] border border-gray-600 text-white focus:outline-none focus:border-[#00FFFF]"
+                          className="w-full p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-855 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
                           required
                         />
                       </div>
                     )}
 
                     {paymentMethod === "cod" && (
-                      <div className="p-5 rounded-xl bg-gray-900/50 border border-gray-700 flex items-start gap-3">
-                        <ShieldCheck className="text-green-400 shrink-0 mt-1" />
+                      <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 flex items-start gap-3 text-left">
+                        <ShieldCheck className="text-green-55 shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-gray-200 font-medium">Pay on Delivery</p>
-                          <p className="text-gray-400 text-sm mt-1">Please keep exact change ready. You can pay via Cash or UPI at your doorstep.</p>
+                          <p className="text-slate-800 dark:text-slate-200 font-bold text-sm uppercase tracking-wide">Pay on Delivery</p>
+                          <p className="text-slate-500 dark:text-slate-400 text-xs font-medium mt-1 leading-relaxed">Please keep exact change ready. You can pay via Cash or UPI at your doorstep.</p>
                         </div>
                       </div>
                     )}
@@ -238,39 +235,38 @@ export default function Payment() {
               </form>
             </div>
 
-
             {/* Right Column: Order Summary */}
-            <div className="lg:col-span-1">
-              <div className="bg-[#1f1b2e] p-6 rounded-2xl border border-gray-800 shadow-lg sticky top-24">
-                <h3 className="text-lg font-semibold mb-4 text-white">Order Summary</h3>
+            <div className="lg:col-span-1 text-left">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24 text-left">
+                <h3 className="text-lg font-black font-title uppercase tracking-wide mb-4 text-slate-800 dark:text-white">Order Summary</h3>
 
                 <div className="space-y-4 mb-6">
-                  <div className="flex justify-between text-gray-300">
+                  <div className="flex justify-between text-slate-550 dark:text-slate-400 text-sm font-semibold">
                     <span>Items ({totalItems})</span>
-                    <span>₹{totalPrice.toFixed(2)}</span>
+                    <span>₹{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                   </div>
-                  <div className="flex justify-between text-gray-300">
+                  <div className="flex justify-between text-slate-550 dark:text-slate-400 text-sm font-semibold">
                     <span>Delivery Charges</span>
-                    <span className="text-green-400">FREE</span>
+                    <span className="text-green-550 dark:text-green-400 font-black">FREE</span>
                   </div>
-                  <hr className="border-gray-700" />
-                  <div className="flex justify-between text-lg font-semibold text-white">
+                  <hr className="border-slate-200 dark:border-slate-800" />
+                  <div className="flex justify-between text-base font-bold text-slate-800 dark:text-white">
                     <span>Total Payable</span>
-                    <span className="text-[#00FFFF]">₹{totalPrice.toFixed(2)}</span>
+                    <span className="text-[#ff512f] font-black font-title">₹{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  form="payment-form" // Triggers the form in the other column
+                  form="payment-form"
                   disabled={!address.fullName || totalItems === 0}
-                  className="w-full bg-emerald-500 text-black py-4 rounded-xl font-bold text-lg hover:bg-emerald-400 transition shadow-[0_4px_14px_rgba(16,185,129,0.25)] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-95 transition shadow-md shadow-orange-500/10 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {paymentMethod === 'cod' ? 'Proceed to Order' : `Pay ₹${totalPrice.toFixed(2)}`}
+                  {paymentMethod === 'cod' ? 'Proceed to Order' : `Pay ₹${totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                 </button>
 
-                <p className="text-center text-gray-500 text-xs mt-4 flex items-center justify-center gap-1">
-                  <ShieldCheck size={14} /> Safe and Secure Payments
+                <p className="text-center text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider mt-4 flex items-center justify-center gap-1">
+                  <ShieldCheck size={14} className="text-[#ff512f]" /> Safe and Secure Payments
                 </p>
               </div>
             </div>

@@ -45,7 +45,6 @@ export default function ResetPassword() {
 
             const res = await api.post("/auth/reset-password", formData);
 
-            // Safely extract string message, aggressively converting to string to prevent React child object error
             let successMsg = "Password reset successful!";
             if (res.data && typeof res.data === 'object' && res.data.message) {
                 successMsg = String(res.data.message);
@@ -55,14 +54,12 @@ export default function ResetPassword() {
 
             toast.success(successMsg);
 
-            // Send user back to login after short delay
             setTimeout(() => {
                 navigate("/login");
             }, 2000);
         } catch (err) {
             console.error(err);
 
-            // Safely extract string error message
             let errMsg = "Failed to reset password";
             if (err.response?.data && typeof err.response.data === 'object' && err.response.data.message) {
                 errMsg = String(err.response.data.message);
@@ -77,75 +74,75 @@ export default function ResetPassword() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
-            <div className="bg-[#1e293b] p-8 rounded-xl shadow-md w-[90%] max-w-md border border-gray-700">
-                <h2 className="text-3xl font-semibold mb-6 text-center text-cyan-400">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 px-4 text-left">
+            <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm w-[90%] max-w-md border border-slate-200 dark:border-slate-800 text-left">
+                <h2 className="text-2xl font-black mb-6 text-center font-title uppercase tracking-wide bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
                     Reset Password
                 </h2>
 
-                <form onSubmit={resetPassword} className="space-y-5 animate-in fade-in duration-300">
+                <form onSubmit={resetPassword} className="space-y-5 text-left">
                     <div>
-                        <label className="block mb-1 text-gray-300 font-medium">Email Address</label>
+                        <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Email Address</label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className={`w-full p-3 rounded-lg bg-[#0f172a] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all border ${errors.email ? 'border-red-500' : 'border-gray-600'}`}
+                            className={`w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 transition border ${errors.email ? 'border-red-500' : 'border-slate-250 dark:border-slate-800'} text-sm font-semibold`}
                             placeholder="Enter your registered email"
                         />
                         {errors.email && (
-                            <p className="text-red-400 text-xs mt-2 font-medium">{errors.email}</p>
+                            <p className="text-red-500 text-xs mt-2 font-bold uppercase tracking-wider">{errors.email}</p>
                         )}
                     </div>
 
                     <div>
-                        <label className="block mb-1 text-gray-300 font-medium">6-Digit OTP</label>
+                        <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">6-Digit OTP</label>
                         <input
                             type="text"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                            className={`w-full p-3 rounded-lg tracking-widest text-center text-lg font-bold bg-[#0f172a] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all border ${errors.otp ? 'border-red-500' : 'border-gray-600'}`}
+                            className={`w-full p-3.5 rounded-xl tracking-widest text-center text-lg font-black bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 transition border ${errors.otp ? 'border-red-500' : 'border-slate-250 dark:border-slate-800'}`}
                             placeholder="000000"
                         />
                         {errors.otp && (
-                            <p className="text-red-400 text-xs mt-2 font-medium text-center">{errors.otp}</p>
+                            <p className="text-red-500 text-xs mt-2 font-bold uppercase tracking-wider text-center">{errors.otp}</p>
                         )}
                     </div>
 
                     <div>
-                        <label className="block mb-1 text-gray-300 font-medium">New Password</label>
+                        <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">New Password</label>
                         <input
                             type="password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            className={`w-full p-3 rounded-lg bg-[#0f172a] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all border ${errors.newPassword ? 'border-red-500' : 'border-gray-600'}`}
+                            className={`w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 transition border ${errors.newPassword ? 'border-red-500' : 'border-slate-250 dark:border-slate-800'} text-sm font-semibold`}
                             placeholder="Enter strong new password"
                         />
                         {errors.newPassword && (
-                            <p className="text-red-400 text-xs mt-2 font-medium">{errors.newPassword}</p>
+                            <p className="text-red-500 text-xs mt-2 font-bold uppercase tracking-wider">{errors.newPassword}</p>
                         )}
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-cyan-500 hover:bg-cyan-400 text-black p-3 rounded-lg font-semibold transition duration-300 disabled:opacity-50"
+                        className="w-full bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white p-3.5 rounded-xl font-bold uppercase tracking-wider text-xs transition duration-300 shadow-md shadow-orange-500/10 active:scale-95 disabled:opacity-50"
                     >
                         {loading ? "Resetting Password..." : "Reset Password"}
                     </button>
                 </form>
 
                 {message && (
-                    <div className="mt-6 p-4 rounded-xl bg-cyan-900/20 border border-cyan-500/20 text-center text-sm font-medium text-cyan-400">
+                    <div className="mt-6 p-4 rounded-xl bg-[#ff512f]/5 border border-[#ff512f]/20 text-center text-xs font-bold uppercase tracking-wider text-[#ff512f]">
                         {message}
                     </div>
                 )}
 
-                <p className="text-center mt-6 text-gray-400">
-                    Remember your password?{" "}
+                <p className="text-center mt-6 text-xs text-slate-550 dark:text-slate-400 font-bold uppercase tracking-wider">
+                    Remember password?{" "}
                     <span
                         onClick={() => navigate("/login")}
-                        className="text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer transition-colors"
+                        className="text-[#ff512f] hover:underline cursor-pointer transition-colors"
                     >
                         Back to Login
                     </span>

@@ -39,7 +39,7 @@ export default function ForgotPassword() {
       setMessage("An OTP code has been sent to your email.");
       setTimeout(() => {
         navigate("/reset-password", { state: { email } });
-      }, 1500); // Small delay to let user see success toast
+      }, 1500);
     } catch (err) {
       console.error(err);
 
@@ -57,47 +57,47 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
-      <div className="bg-[#1e293b] p-8 rounded-xl shadow-md w-[90%] max-w-md border border-gray-700">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-cyan-400">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 px-4 text-left">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm w-[90%] max-w-md border border-slate-200 dark:border-slate-800 text-left">
+        <h2 className="text-2xl font-black mb-6 text-center font-title uppercase tracking-wide bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
           Forgot Password?
         </h2>
 
-        <form onSubmit={sendResetLink} className="space-y-5">
+        <form onSubmit={sendResetLink} className="space-y-5 text-left">
           <div>
-            <label className="block mb-1 text-gray-300 font-medium">Email Address</label>
+            <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider text-left">Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={`w-full p-3 rounded-lg bg-[#0f172a] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all border ${errors.email ? 'border-red-500' : 'border-gray-600'}`}
+              className={`w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-850 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 transition border ${errors.email ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'} text-sm font-semibold`}
               placeholder="Enter your registered email"
             />
             {errors.email && (
-              <p className="text-red-400 text-xs mt-2 font-medium">{errors.email}</p>
+              <p className="text-red-500 text-xs mt-2 font-bold uppercase tracking-wider">{errors.email}</p>
             )}
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black p-3 rounded-lg font-semibold transition duration-300 disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white p-3.5 rounded-xl font-bold uppercase tracking-wider text-xs transition duration-300 disabled:opacity-50 shadow-md shadow-orange-500/10 active:scale-95"
           >
-            {loading ? "Sending Link..." : "Send Reset Link"}
+            {loading ? "Sending OTP..." : "Send Reset OTP"}
           </button>
         </form>
 
         {message && (
-          <div className="mt-6 p-4 rounded-xl bg-cyan-900/20 border border-cyan-500/20 text-center text-sm font-medium text-cyan-400">
+          <div className="mt-6 p-4 rounded-xl bg-[#ff512f]/5 border border-[#ff512f]/20 text-center text-xs font-bold uppercase tracking-wider text-[#ff512f]">
             {message}
           </div>
         )}
 
-        <p className="text-center mt-6 text-gray-400">
-          Remember your password?{" "}
+        <p className="text-center mt-6 text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
+          Remember password?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer transition-colors"
+            className="text-[#ff512f] hover:underline cursor-pointer transition-colors"
           >
             Back to Login
           </span>

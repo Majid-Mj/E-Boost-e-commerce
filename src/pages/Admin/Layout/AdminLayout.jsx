@@ -7,7 +7,7 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex bg-[#f8fafc] min-h-screen font-sans">
+    <div className="flex bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 min-h-screen font-sans transition-colors duration-300">
 
       {/* Sidebar - fixed width on desktop */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />

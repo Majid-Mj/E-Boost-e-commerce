@@ -35,13 +35,11 @@ export default function AddressPage() {
     try {
       setLoading(true);
       const res = await api.get("/UserShippingAddress");
-      // Backend wraps responses in ApiResponse: { data: [...] }
       const fetchedAddresses = res.data?.data || res.data || [];
 
       setAddresses(fetchedAddresses);
 
       if (fetchedAddresses && fetchedAddresses.length > 0) {
-        // Find default or use first
         const defaultAddr = fetchedAddresses.find(a => a.isDefault);
         setSelectedAddressId(defaultAddr ? defaultAddr.id : fetchedAddresses[0].id);
         setShowAddForm(false);
@@ -63,7 +61,6 @@ export default function AddressPage() {
   const handleAddNewAddress = async (e) => {
     e.preventDefault();
 
-    // Validate fields
     if (
       !addressForm.FullName ||
       !addressForm.PhoneNumber ||
@@ -79,7 +76,6 @@ export default function AddressPage() {
 
     try {
       if (editAddressId) {
-        // Update existing address
         const updateData = {
           FullName: addressForm.FullName,
           PhoneNumber: addressForm.PhoneNumber,
@@ -93,7 +89,6 @@ export default function AddressPage() {
         await api.put(`/UserShippingAddress/${editAddressId}`, updateData);
         toast.success("Address updated successfully!");
       } else {
-        // Create new address
         const formData = new FormData();
         formData.append("FullName", addressForm.FullName);
         formData.append("PhoneNumber", addressForm.PhoneNumber);
@@ -111,7 +106,6 @@ export default function AddressPage() {
         toast.success("Address added successfully!");
       }
 
-      // Reset form and re-fetch list
       setAddressForm({
         FullName: "",
         PhoneNumber: "",
@@ -163,11 +157,8 @@ export default function AddressPage() {
     }
 
     const selectedAddrObject = addresses.find(a => String(a.id) === String(selectedAddressId));
-
-    // Save address temporarily for frontend flow
     localStorage.setItem("userAddress", JSON.stringify(selectedAddrObject));
 
-    // Optional: Pass buyNow product context forward if it came from the buyNow button
     if (location.state?.buyNowProduct) {
       navigate("/payment", {
         state: {
@@ -176,29 +167,29 @@ export default function AddressPage() {
         }
       });
     } else {
-      navigate("/payment"); // Navigate to payment page for normal cart flow
+      navigate("/payment");
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-black via-gray-900 to-black text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300">
       <Navbar />
 
       <div className="flex-grow flex flex-col items-center justify-center py-24 px-4">
-        <div className="bg-[#1f1b2e] w-full max-w-lg rounded-2xl p-8 shadow-[0_0_20px_rgba(0,255,255,0.1)] border border-gray-800">
-          <h2 className="text-3xl font-bold text-center mb-8 text-[#00FFFF]">
+        <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+          <h2 className="text-3xl font-black mb-8 text-center font-title uppercase tracking-wide bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
             Shipping Address
           </h2>
 
           {loading ? (
-            <div className="text-center text-gray-400 py-4">Loading your addresses...</div>
+            <div className="text-center text-slate-500 dark:text-slate-400 py-4 font-semibold">Loading your addresses...</div>
           ) : (
             <>
               {/* Selectable Address List */}
               {addresses.length > 0 && !showAddForm && (
                 <div className="mb-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <label className="text-gray-300 font-medium">Select Saved Address</label>
+                  <div className="flex justify-between items-center mb-4 gap-2">
+                    <label className="text-slate-700 dark:text-slate-350 text-xs font-bold uppercase tracking-wider">Select Saved Address</label>
                     <button
                       type="button"
                       onClick={() => {
@@ -214,45 +205,45 @@ export default function AddressPage() {
                         });
                         setShowAddForm(true);
                       }}
-                      className="bg-[#00FFFF] text-black px-4 py-2 rounded-lg hover:bg-cyan-400 transition flex items-center gap-2 font-semibold text-sm"
+                      className="bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white px-4 py-2 rounded-xl hover:opacity-95 transition flex items-center gap-2 font-bold text-xs uppercase tracking-wider"
                     >
-                      <Plus size={18} /> Add New
+                      <Plus size={14} /> Add New
                     </button>
                   </div>
 
-                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar text-left">
                     {addresses.map((addr) => (
                       <div
                         key={addr.id}
                         onClick={() => setSelectedAddressId(addr.id)}
-                        className={`p-4 rounded-xl border-2 transition cursor-pointer relative ${selectedAddressId === addr.id
-                          ? "border-[#00FFFF] bg-[#2a243a]"
-                          : "border-gray-700 bg-[#2a243a]/40 hover:border-gray-500 hover:bg-[#2a243a]/60"
+                        className={`p-4 rounded-xl border-2 transition cursor-pointer relative text-left ${selectedAddressId === addr.id
+                          ? "border-[#ff512f] bg-[#ff512f]/5"
+                          : "border-slate-250 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700"
                           }`}
                       >
                         <div className="flex justify-between items-start gap-3">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-white text-lg">{addr.fullName}</h4>
-                            <p className="text-gray-400 mt-1">{addr.street}, {addr.city}</p>
-                            <p className="text-gray-400">{addr.state}, {addr.postalCode}, {addr.country}</p>
-                            <p className="text-gray-400 font-medium mt-1">Phone: {addr.phoneNumber}</p>
+                          <div className="flex-1 text-left">
+                            <h4 className="font-bold text-slate-800 dark:text-slate-200 text-base">{addr.fullName}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">{addr.street}, {addr.city}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{addr.state}, {addr.postalCode}, {addr.country}</p>
+                            <p className="text-xs text-slate-650 dark:text-slate-355 font-bold mt-2">Phone: {addr.phoneNumber}</p>
                           </div>
-                          <div className="flex flex-col items-end gap-3 h-full justify-between">
+                          <div className="flex flex-col items-end gap-3 h-full justify-between self-stretch min-h-[90px]">
                             {addr.isDefault ? (
-                              <span className="bg-green-500/20 text-green-400 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded border border-green-500/30">
+                              <span className="bg-green-500/10 text-green-550 dark:text-green-400 text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded-lg border border-green-500/20">
                                 Default
                               </span>
                             ) : (
                               <button
                                 onClick={(e) => handleSetDefault(e, addr.id)}
-                                className="text-xs text-gray-400 hover:text-[#00FFFF] underline z-10"
+                                className="text-xs font-bold text-[#ff512f] hover:underline z-10"
                               >
-                                Set as Default
+                                Set Default
                               </button>
                             )}
                             <button
                               onClick={(e) => handleEditClick(e, addr)}
-                              className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-4 py-1.5 rounded transition z-10"
+                              className="text-[10px] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-750 dark:text-white px-4 py-1.5 rounded-lg font-bold uppercase tracking-wider transition border border-slate-200 dark:border-slate-700 z-10"
                             >
                               Edit
                             </button>
@@ -266,26 +257,25 @@ export default function AddressPage() {
 
               {/* Add New Address Form Section */}
               {(showAddForm || addresses.length === 0) && (
-                <div className="bg-[#2a243a]/50 p-5 rounded-xl border border-gray-700 mt-6 relative overflow-hidden">
-                  <h3 className="text-lg font-semibold text-white mb-4">
+                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-xl border border-slate-250 dark:border-slate-850 mt-6 relative overflow-hidden text-left">
+                  <h3 className="text-base font-bold text-slate-800 dark:text-white mb-4 uppercase tracking-wide">
                     {editAddressId ? "Edit Address" : "Add New Address"}
                   </h3>
                   <form onSubmit={handleAddNewAddress} className="space-y-4">
-                    {/* Full Name & Phone Row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-gray-300 mb-1">Full Name</label>
+                        <label className="block text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Full Name</label>
                         <input
                           type="text"
                           name="FullName"
                           value={addressForm.FullName}
                           onChange={handleChange}
                           required
-                          className="w-full bg-[#352f44] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[#00FFFF] text-white"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 text-slate-850 dark:text-white text-sm font-semibold"
                         />
                       </div>
                       <div>
-                        <label className="block text-gray-300 mb-1">Phone Number</label>
+                        <label className="block text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Phone Number</label>
                         <input
                           type="tel"
                           name="PhoneNumber"
@@ -293,77 +283,74 @@ export default function AddressPage() {
                           onChange={handleChange}
                           required
                           pattern="^\+?[0-9]{7,15}$"
-                          className="w-full bg-[#352f44] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[#00FFFF] text-white"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 text-slate-855 dark:text-white text-sm font-semibold"
                         />
                       </div>
                     </div>
 
-                    {/* Street */}
                     <div>
-                      <label className="block text-gray-300 mb-1">Street Address</label>
+                      <label className="block text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Street Address</label>
                       <input
                         type="text"
                         name="Street"
                         value={addressForm.Street}
                         onChange={handleChange}
                         required
-                        className="w-full bg-[#352f44] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[#00FFFF] text-white"
+                        className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 text-slate-855 dark:text-white text-sm font-semibold"
                       />
                     </div>
 
-                    {/* City & State Row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-gray-300 mb-1">City</label>
+                        <label className="block text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">City</label>
                         <input
                           type="text"
                           name="City"
                           value={addressForm.City}
                           onChange={handleChange}
                           required
-                          className="w-full bg-[#352f44] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[#00FFFF] text-white"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 text-slate-855 dark:text-white text-sm font-semibold"
                         />
                       </div>
                       <div>
-                        <label className="block text-gray-300 mb-1">State</label>
+                        <label className="block text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">State</label>
                         <input
                           type="text"
                           name="State"
                           value={addressForm.State}
                           onChange={handleChange}
                           required
-                          className="w-full bg-[#352f44] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[#00FFFF] text-white"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 text-slate-855 dark:text-white text-sm font-semibold"
                         />
                       </div>
                     </div>
 
-                    {/* Postal Code & Country Row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-gray-300 mb-1">Postal Code</label>
+                        <label className="block text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Postal Code</label>
                         <input
                           type="text"
                           name="PostalCode"
                           value={addressForm.PostalCode}
                           onChange={handleChange}
                           required
-                          className="w-full bg-[#352f44] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[#00FFFF] text-white"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 text-slate-855 dark:text-white text-sm font-semibold"
                         />
                       </div>
                       <div>
-                        <label className="block text-gray-300 mb-1">Country</label>
+                        <label className="block text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Country</label>
                         <input
                           type="text"
                           name="Country"
                           value={addressForm.Country}
                           onChange={handleChange}
                           required
-                          className="w-full bg-[#352f44] border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-[#00FFFF] text-white"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 text-slate-855 dark:text-white text-sm font-semibold"
                         />
                       </div>
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 pt-2">
                       {addresses.length > 0 && (
                         <button
                           type="button"
@@ -371,14 +358,14 @@ export default function AddressPage() {
                             setShowAddForm(false);
                             setEditAddressId(null);
                           }}
-                          className="flex-1 bg-transparent border-2 border-gray-600 text-gray-300 py-2 rounded-lg font-semibold hover:bg-gray-700 transition"
+                          className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-2.5 rounded-xl font-bold uppercase tracking-wider text-xs transition border border-slate-200 dark:border-slate-700"
                         >
                           Cancel
                         </button>
                       )}
                       <button
                         type="submit"
-                        className="flex-1 bg-transparent border-2 border-[#00FFFF] text-[#00FFFF] py-2 rounded-lg font-semibold hover:bg-[#00FFFF] hover:text-black transition"
+                        className="flex-1 bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white py-2.5 rounded-xl font-bold uppercase tracking-wider text-xs hover:opacity-95 transition"
                       >
                         {editAddressId ? "Update Address" : "Save Address"}
                       </button>
@@ -392,7 +379,7 @@ export default function AddressPage() {
                 <button
                   type="button"
                   onClick={handleProceed}
-                  className="w-full bg-[#00FFFF] text-black py-4 rounded-lg font-bold text-lg hover:bg-cyan-400 hover:shadow-[0_0_15px_rgba(0,255,255,0.5)] transition mt-8"
+                  className="w-full bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white py-4 rounded-xl font-bold text-base hover:opacity-95 shadow-md shadow-orange-500/10 active:scale-95 transition mt-8"
                 >
                   Proceed to Payment
                 </button>

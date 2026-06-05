@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
+import toast from "react-hot-toast";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -40,10 +41,10 @@ export default function Signup() {
     if (!formData.password)
       newErrors.password = "Password is required";
     else if (
-            !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(formData.password)
-       )
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(formData.password)
+    )
       newErrors.password =
-           "Password must contain uppercase, lowercase, number and special character (min 8 chars)";
+        "Password must contain uppercase, lowercase, number and special character (min 8 chars)";
 
     if (!formData.confirmPassword)
       newErrors.confirmPassword = "Please confirm your password";
@@ -61,18 +62,18 @@ export default function Signup() {
     if (Object.keys(validationErrors).length === 0) {
       setLoading(true);
       try {
-          await api.post("/auth/register", {
+        await api.post("/auth/register", {
           fullName: formData.fullName,
           email: formData.email,
           password: formData.password,
           confirmPassword: formData.confirmPassword
         });
 
-        alert("Signup successful!");
+        toast.success("Signup successful!");
         navigate("/login");
 
       } catch (error) {
-        alert(
+        toast.error(
           error.response?.data?.message || "Signup failed"
         );
       } finally {
@@ -82,70 +83,70 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
-      <div className="bg-[#1e293b] p-8 rounded-xl shadow-md w-[90%] max-w-md border border-gray-700">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-cyan-400">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 px-4 text-left">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm w-[90%] max-w-md border border-slate-200 dark:border-slate-800 text-left">
+        <h2 className="text-2xl font-black mb-6 text-center font-title uppercase tracking-wide bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
           Create Account
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5 text-left">
           <div>
-            <label className="block mb-1 text-gray-300">Full Name</label>
+            <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Full Name</label>
             <input
               type="text"
               name="fullName"
               value={formData.fullName}
               onBlur={handleBlur}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 transition text-sm font-semibold"
             />
             {touched.fullName && errors.fullName && (
-              <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>
+              <p className="text-red-500 text-xs mt-1.5 font-bold uppercase tracking-wider">{errors.fullName}</p>
             )}
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-300">Email</label>
+            <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onBlur={handleBlur}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 transition text-sm font-semibold"
             />
             {touched.email && errors.email && (
-              <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+              <p className="text-red-500 text-xs mt-1.5 font-bold uppercase tracking-wider">{errors.email}</p>
             )}
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-300">Password</label>
+            <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Password</label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onBlur={handleBlur}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 transition text-sm font-semibold"
             />
             {touched.password && errors.password && (
-              <p className="text-red-400 text-sm mt-1">{errors.password}</p>
+              <p className="text-red-500 text-xs mt-1.5 font-bold uppercase tracking-wider leading-relaxed">{errors.password}</p>
             )}
           </div>
 
           <div>
-            <label className="block mb-1 text-gray-300">Confirm Password</label>
+            <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Confirm Password</label>
             <input
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onBlur={handleBlur}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-[#ff512f]/40 transition text-sm font-semibold"
             />
             {touched.confirmPassword && errors.confirmPassword && (
-              <p className="text-red-400 text-sm mt-1">
+              <p className="text-red-500 text-xs mt-1.5 font-bold uppercase tracking-wider">
                 {errors.confirmPassword}
               </p>
             )}
@@ -154,17 +155,17 @@ export default function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black transition duration-300 p-3 rounded-lg font-semibold"
+            className="w-full bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white transition duration-300 p-3.5 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-orange-500/10 active:scale-95 disabled:opacity-50"
           >
             {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
 
-        <p className="text-center mt-5 text-gray-400">
+        <p className="text-center mt-6 text-xs text-slate-550 dark:text-slate-400 font-bold uppercase tracking-wider">
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-cyan-400 hover:underline cursor-pointer"
+            className="text-[#ff512f] hover:underline cursor-pointer transition-colors"
           >
             Login
           </span>

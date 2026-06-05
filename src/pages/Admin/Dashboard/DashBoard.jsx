@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pie, Bar } from "react-chartjs-2";
 import api from "../../../config/api";
+import { useTheme } from "../../../contexts/ThemeContext";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -38,6 +39,7 @@ ChartJS.register(
 );
 
 export default function Dashboard() {
+  const { theme } = useTheme();
   const [stats, setStats] = useState({
     revenue: 0,
     orders: 0,
@@ -145,14 +147,6 @@ export default function Dashboard() {
           data: Object.values(categoryCount),
         });
 
-        console.log("DASHBOARD EXTRACTED:", {
-          ordersCount: orders.length,
-          productsCount: products.length,
-          usersCount: usersList.length,
-          firstOrder: orders[0],
-          totalRevenue
-        });
-
         setStats({
           revenue: totalRevenue,
           orders: orders.length,
@@ -181,31 +175,31 @@ export default function Dashboard() {
       title: "Total Revenue",
       value: formattedRevenue,
       icon: <IndianRupee size={22} />,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50"
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10 dark:bg-emerald-500/20"
     },
     {
       title: "Orders Done",
       value: stats.orders,
       icon: <ShoppingBag size={22} />,
-      color: "text-purple-600",
-      bg: "bg-purple-50",
+      color: "text-[#ff512f]",
+      bg: "bg-[#ff512f]/10 dark:bg-[#ff512f]/20",
       onClick: () => navigate("/admin/orders")
     },
     {
       title: "Active Customers",
       value: stats.customers,
       icon: <Users size={22} />,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "text-blue-500",
+      bg: "bg-blue-500/10 dark:bg-blue-500/20",
       onClick: () => navigate("/admin/users")
     },
     {
       title: "Product Range",
       value: stats.products,
       icon: <Package size={22} />,
-      color: "text-amber-600",
-      bg: "bg-amber-50",
+      color: "text-amber-500",
+      bg: "bg-amber-500/10 dark:bg-amber-500/20",
       onClick: () => navigate("/admin/products")
     },
   ];
@@ -219,16 +213,16 @@ export default function Dashboard() {
         type: "bar",
         label: "Revenue (₹)",
         data: stats.monthlyRevenue,
-        backgroundColor: "rgba(124, 58, 237, 0.7)", // Purple-600 with opacity
+        backgroundColor: "rgba(255, 81, 47, 0.85)", // EBoost Orange with opacity
         borderRadius: 8,
-        hoverBackgroundColor: "rgba(124, 58, 237, 1)",
+        hoverBackgroundColor: "rgba(221, 36, 118, 1)", // EBoost Pink
       },
       {
         type: "line",
         label: "Order Count",
         data: stats.monthlyOrders,
         borderColor: "#10b981", // Emerald-500
-        backgroundColor: "rgba(16, 185, 129, 0.1)",
+        backgroundColor: "rgba(16, 185, 129, 0.05)",
         tension: 0.4,
         fill: true,
         pointBackgroundColor: "#10b981",
@@ -251,11 +245,12 @@ export default function Dashboard() {
         labels: {
           usePointStyle: true,
           padding: 20,
-          font: { weight: '600', size: 12 }
+          font: { weight: '600', size: 12 },
+          color: theme === 'dark' ? '#94a3b8' : '#64748b'
         }
       },
       tooltip: {
-        backgroundColor: "#1e293b",
+        backgroundColor: theme === 'dark' ? '#0f172a' : '#1e293b',
         padding: 12,
         titleFont: { size: 14, weight: '700' },
         bodyFont: { size: 13 },
@@ -265,12 +260,12 @@ export default function Dashboard() {
     scales: {
       x: {
         grid: { display: false },
-        ticks: { font: { weight: '600' }, color: '#64748b' }
+        ticks: { font: { weight: '600' }, color: theme === 'dark' ? '#64748b' : '#94a3b8' }
       },
       y: {
         beginAtZero: true,
-        grid: { color: "#f1f5f9" },
-        ticks: { font: { weight: '600' }, color: '#64748b' }
+        grid: { color: theme === 'dark' ? 'rgba(255,255,255,0.06)' : '#f1f5f9' },
+        ticks: { font: { weight: '600' }, color: theme === 'dark' ? '#64748b' : '#94a3b8' }
       },
       orders: {
         beginAtZero: true,
@@ -283,27 +278,27 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#f8fafc]">
-        <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-700 font-bold animate-pulse">Initializing Dashboard...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300">
+        <div className="w-16 h-16 border-4 border-[#ff512f] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-slate-700 dark:text-slate-350 font-bold animate-pulse">Initializing Dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-8 bg-[#f8fafc] min-h-screen font-sans text-slate-900">
+    <div className="p-4 sm:p-8 bg-slate-50 dark:bg-slate-950 min-h-screen font-sans text-slate-800 dark:text-slate-200 transition-colors duration-300">
 
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
-            <BarChart3 className="text-purple-600" size={32} />
+          <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
+            <BarChart3 className="text-[#ff512f]" size={32} />
             Business Dashboard
           </h1>
-          <p className="text-slate-600 font-medium mt-1">Detailed overview of your store's performance and operations.</p>
+          <p className="text-slate-500 dark:text-slate-400 font-semibold mt-1">Detailed overview of your store's performance and operations.</p>
         </div>
-        <div className="bg-white border border-slate-200 px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-3 text-slate-700 font-bold">
-          <Calendar size={18} className="text-purple-600" />
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-3 text-slate-700 dark:text-slate-300 font-bold transition-colors">
+          <Calendar size={18} className="text-[#ff512f]" />
           {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </div>
       </div>
@@ -314,7 +309,7 @@ export default function Dashboard() {
           <div
             key={i}
             onClick={card.onClick}
-            className={`bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-purple-100 transition-all duration-300 group ${card.onClick ? 'cursor-pointer' : ''}`}
+            className={`bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-800/60 hover:shadow-xl hover:border-orange-500/20 dark:hover:border-orange-500/20 transition-all duration-300 group ${card.onClick ? 'cursor-pointer' : ''}`}
           >
             <div className="flex justify-between items-start mb-4">
               <div className={`${card.bg} ${card.color} p-3 rounded-2xl transition-transform group-hover:scale-110`}>
@@ -322,8 +317,8 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <p className="text-[13px] font-bold text-slate-500 uppercase tracking-wider">{card.title}</p>
-              <h3 className="text-2xl font-bold mt-1 text-slate-900">{card.value}</h3>
+              <p className="text-[13px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider">{card.title}</p>
+              <h3 className="text-2xl font-bold mt-1 text-slate-900 dark:text-white">{card.value}</h3>
             </div>
           </div>
         ))}
@@ -332,13 +327,13 @@ export default function Dashboard() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Sales Overview */}
-        <div className="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-800/60 p-8">
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-2">
-              <TrendingUp className="text-purple-600" size={20} />
-              <h2 className="text-xl font-bold text-slate-900">Revenue Analytics</h2>
+              <TrendingUp className="text-[#ff512f]" size={20} />
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Revenue Analytics</h2>
             </div>
-            <div className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 uppercase tracking-widest">
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 uppercase tracking-widest">
               Last 12 Months
             </div>
           </div>
@@ -348,10 +343,10 @@ export default function Dashboard() {
         </div>
 
         {/* Category Share */}
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 flex flex-col">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-800/60 p-8 flex flex-col">
           <div className="flex items-center gap-2 mb-8">
-            <Layers className="text-purple-600" size={20} />
-            <h2 className="text-xl font-bold text-slate-900">Category Share</h2>
+            <Layers className="text-[#ff512f]" size={20} />
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Category Share</h2>
           </div>
           <div className="flex-1 flex flex-col justify-center items-center">
             {categoryChart.labels.length > 0 ? (
@@ -362,15 +357,15 @@ export default function Dashboard() {
                     datasets: [{
                       data: categoryChart.data,
                       backgroundColor: [
-                        "#7c3aed", // Purple
+                        "#ff512f", // EBoost Red/Orange
+                        "#dd2476", // EBoost Pink/Red
                         "#10b981", // Emerald
-                        "#f59e0b", // Amber
                         "#3b82f6", // Blue
-                        "#f43f5e", // Rose
+                        "#f59e0b", // Amber
                         "#0ea5e9", // Sky
                       ],
                       borderWidth: 6,
-                      borderColor: "#ffffff",
+                      borderColor: theme === "dark" ? "#0f172a" : "#ffffff",
                       hoverOffset: 15
                     }],
                   }}
@@ -380,7 +375,7 @@ export default function Dashboard() {
                       tooltip: {
                         enabled: true,
                         padding: 12,
-                        backgroundColor: "#1e293b",
+                        backgroundColor: theme === "dark" ? "#0f172a" : "#1e293b",
                         titleFont: { size: 14, weight: '700' },
                         bodyFont: { size: 13 },
                         cornerRadius: 8,
@@ -390,25 +385,25 @@ export default function Dashboard() {
                   }}
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Total</span>
-                  <span className="text-3xl font-bold text-slate-900">
+                  <span className="text-slate-400 dark:text-slate-500 text-sm font-bold uppercase tracking-widest">Total</span>
+                  <span className="text-3xl font-bold text-slate-900 dark:text-white">
                     {categoryChart.data.reduce((a, b) => a + b, 0)}
                   </span>
                 </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center opacity-40 text-center">
-                <Package size={64} className="mb-4 text-slate-300" />
-                <p className="text-slate-700 font-bold">No categorical data found</p>
+                <Package size={64} className="mb-4 text-slate-350 dark:text-slate-650" />
+                <p className="text-slate-700 dark:text-slate-300 font-bold">No categorical data found</p>
               </div>
             )}
 
             {/* Legend Mapping */}
             <div className="mt-10 grid grid-cols-2 gap-y-3 gap-x-6 w-full">
               {categoryChart.labels.map((label, idx) => (
-                <div key={idx} className="flex items-center gap-2.5">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ["#7c3aed", "#10b981", "#f59e0b", "#3b82f6", "#f43f5e", "#0ea5e9"][idx % 6] }}></div>
-                  <span className="text-xs font-bold text-slate-600 truncate">{label}</span>
+                <div key={idx} className="flex items-center gap-2.5 bg-slate-50/50 dark:bg-slate-950/20 p-1.5 rounded-lg border border-slate-100/50 dark:border-slate-800/40">
+                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: ["#ff512f", "#dd2476", "#10b981", "#3b82f6", "#f59e0b", "#0ea5e9"][idx % 6] }}></div>
+                  <span className="text-xs font-bold text-slate-650 dark:text-slate-350 truncate">{label}</span>
                 </div>
               ))}
             </div>

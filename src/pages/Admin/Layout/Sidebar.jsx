@@ -8,10 +8,7 @@ import {
   Users,
   X,
   LogOut,
-  Zap,
-  ChevronRight,
-  Settings,
-  HelpCircle
+  ChevronRight
 } from "lucide-react";
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -46,12 +43,12 @@ export default function Sidebar({ isOpen, onClose }) {
         to={item.path}
         onClick={isMobile ? onClose : undefined}
         className={`group flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 ${isActive
-          ? "bg-purple-600 text-white shadow-lg shadow-purple-900/20"
-          : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+          ? "bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white shadow-lg shadow-orange-500/20"
+          : "text-slate-500 dark:text-slate-400 hover:text-[#ff512f] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900"
           }`}
       >
         <div className="flex items-center gap-3">
-          <span className={`${isActive ? "text-white" : "text-slate-500 group-hover:text-purple-400"} transition-colors`}>
+          <span className={`${isActive ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-[#ff512f]"} transition-colors`}>
             {item.icon}
           </span>
           <span className="font-bold tracking-tight">{item.name}</span>
@@ -64,26 +61,27 @@ export default function Sidebar({ isOpen, onClose }) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex fixed top-0 left-0 h-full w-72 bg-[#0f172a] text-white flex-col z-40 border-r border-slate-800/50">
+      <aside className="hidden md:flex fixed top-0 left-0 h-full w-72 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl text-slate-800 dark:text-slate-200 flex-col z-40 border-r border-slate-200/60 dark:border-slate-800/60 transition-colors duration-300">
         <div className="flex items-center gap-3 px-8 py-10">
-          <h1 className="text-2xl font-black tracking-tighter">
-            E-BOOST<span className="text-purple-500">.</span>
-          </h1>
+          <span className="text-2xl font-black tracking-widest font-title flex items-center">
+            <span className="text-black dark:text-white pr-[2px]">E</span>
+            <span className="text-[#ff512f]">BOOST</span>
+          </span>
         </div>
 
         <nav className="flex-1 px-6 space-y-2 overflow-y-auto scrollbar-hide py-4">
-          <p className="px-4 mb-4 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em]">Main Navigation</p>
+          <p className="px-4 mb-4 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Main Navigation</p>
           {menuItems.map((item) => (
             <NavLink key={item.name} item={item} />
           ))}
         </nav>
 
-        <div className="p-6 border-t border-slate-800/50 space-y-2">
-          <p className="px-4 mb-2 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em]">System</p>
+        <div className="p-6 border-t border-slate-200/60 dark:border-slate-800/60 space-y-2">
+          <p className="px-4 mb-2 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">System</p>
 
           <button
             onClick={handleLogoutClick}
-            className="flex items-center gap-3 w-full px-4 py-3 text-rose-400 font-bold hover:bg-rose-500/10 rounded-2xl transition-all"
+            className="flex items-center gap-3 w-full px-4 py-3 text-rose-500 font-bold hover:bg-rose-500/10 rounded-2xl transition-all"
           >
             <LogOut size={20} />
             <span>Sign Out</span>
@@ -93,19 +91,22 @@ export default function Sidebar({ isOpen, onClose }) {
 
       {/* Mobile Backdrop */}
       <div
-        className={`fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm md:hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm md:hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={onClose}
       ></div>
 
       {/* Mobile Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-72 bg-[#0f172a] text-white flex flex-col shadow-2xl transform transition-all duration-300 ease-in-out md:hidden z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed top-0 left-0 h-full w-72 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 flex flex-col shadow-2xl transform transition-all duration-300 ease-in-out md:hidden z-50 border-r border-slate-200/60 dark:border-slate-800/60 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="flex items-center justify-between px-8 py-8 border-b border-slate-800/50">
-          <h2 className="text-xl font-black tracking-tighter text-white">E-BOOST</h2>
+        <div className="flex items-center justify-between px-8 py-8 border-b border-slate-200/60 dark:border-slate-800/60">
+          <span className="text-xl font-black tracking-widest font-title flex items-center">
+            <span className="text-black dark:text-white pr-[2px]">E</span>
+            <span className="text-[#ff512f]">BOOST</span>
+          </span>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-450 hover:text-[#ff512f] dark:hover:text-white"
           >
             <X size={20} />
           </button>
@@ -117,10 +118,10 @@ export default function Sidebar({ isOpen, onClose }) {
           ))}
         </nav>
 
-        <div className="p-8 border-t border-slate-800/50">
+        <div className="p-8 border-t border-slate-200/60 dark:border-slate-800/60">
           <button
             onClick={handleLogoutClick}
-            className="w-full flex items-center justify-center gap-3 bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-rose-900/20"
+            className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-orange-500/20"
           >
             <LogOut size={20} />
             Sign Out
@@ -130,27 +131,27 @@ export default function Sidebar({ isOpen, onClose }) {
 
       {/* Custom Logout Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-8 text-center">
-              <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <LogOut className="text-rose-600" size={32} />
+              <div className="w-16 h-16 bg-rose-100 dark:bg-rose-950/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogOut className="text-[#ff512f]" size={32} />
               </div>
-              <h2 className="text-2xl font-black text-slate-900 mb-2">Sign Out?</h2>
-              <p className="text-slate-500 font-bold mb-8">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">Sign Out?</h2>
+              <p className="text-slate-500 dark:text-slate-400 font-bold mb-8">
                 Are you sure you want to end your current session?
               </p>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLogoutModal(false)}
-                  className="flex-1 py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition-colors"
+                  className="flex-1 py-3.5 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-2xl transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLogoutConfirm}
-                  className="flex-1 py-3.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl transition-colors shadow-lg shadow-rose-200"
+                  className="flex-1 py-3.5 px-4 bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white font-bold rounded-2xl transition-colors shadow-lg shadow-orange-500/20"
                 >
                   Yes, Sign Out
                 </button>

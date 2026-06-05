@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../config/api";
+import { useTheme } from "../../../contexts/ThemeContext";
 import {
   Search,
   Package,
@@ -7,21 +8,18 @@ import {
   CheckCircle,
   XCircle,
   RefreshCcw,
-  Eye,
-  Calendar,
-  IndianRupee,
-  User,
-  MapPin,
-  Phone,
   Clock,
   ChevronDown,
   Filter,
-  MoreVertical,
-  Download
+  Phone,
+  MapPin,
+  Calendar,
+  IndianRupee
 } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function AdminOrders() {
+  const { theme } = useTheme();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +40,6 @@ export default function AdminOrders() {
     try {
       setLoading(true);
       const res = await api.get("/Order/admin?page=1&pagesize=500");
-      console.log("FULL RAW RESPONSE:", res.data);
 
       const rd = res.data;
       let ordersList = [];
@@ -182,12 +179,12 @@ export default function AdminOrders() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Pending": return "bg-amber-100 text-amber-700 border-amber-200";
-      case "Confirmed": return "bg-blue-100 text-blue-700 border-blue-200";
-      case "Shipped": return "bg-indigo-100 text-indigo-700 border-indigo-200";
-      case "Delivered": return "bg-emerald-100 text-emerald-700 border-emerald-200";
-      case "Cancelled": return "bg-rose-100 text-rose-700 border-rose-200";
-      default: return "bg-slate-100 text-slate-700 border-slate-200";
+      case "Pending": return "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30";
+      case "Confirmed": return "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/30";
+      case "Shipped": return "bg-indigo-50 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900/30";
+      case "Delivered": return "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/30";
+      case "Cancelled": return "bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-450 border border-rose-200 dark:border-rose-900/30";
+      default: return "bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-350 border border-slate-200 dark:border-slate-800";
     }
   };
 
@@ -204,23 +201,26 @@ export default function AdminOrders() {
 
   if (loading && orders.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#f8fafc]">
-        <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-600 font-medium animate-pulse">Loading amazing orders...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300">
+        <div className="w-16 h-16 border-4 border-[#ff512f] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-slate-650 dark:text-slate-350 font-bold animate-pulse">Loading amazing orders...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-8 bg-[#f8fafc] min-h-screen font-sans text-slate-900">
+    <div className="p-4 sm:p-8 bg-slate-50 dark:bg-slate-950 min-h-screen font-sans text-slate-800 dark:text-slate-200 transition-colors duration-300">
       {/* Header Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Order Management</h1>
-        <p className="text-slate-600 font-medium mt-1">Manage, Track and Update customer orders in real-time.</p>
+        <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
+          <Truck className="text-[#ff512f]" size={32} />
+          Order Management
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 font-semibold mt-1">Manage, Track and Update customer orders in real-time.</p>
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-col lg:flex-row items-center gap-4">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800/60 mb-6 flex flex-col lg:flex-row items-center gap-4 transition-colors">
         <div className="relative flex-1 w-full">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-slate-400" />
@@ -230,18 +230,18 @@ export default function AdminOrders() {
             placeholder="Search by ID, Customer Name, Phone or Product..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="block w-full pl-11 pr-4 py-3 border border-slate-300 rounded-xl leading-5 bg-white text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-sm"
+            className="block w-full pl-11 pr-4 py-3 border border-slate-250 dark:border-slate-800 rounded-xl leading-5 bg-white dark:bg-slate-950 text-slate-900 dark:text-white font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff512f] transition-all shadow-sm"
           />
         </div>
         <div className="flex items-center gap-3 w-full lg:w-auto">
-          <div className="flex items-center gap-2 text-slate-700 font-bold whitespace-nowrap">
+          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-350 font-bold whitespace-nowrap">
             <Filter size={18} />
             <span>Filter Status:</span>
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm min-w-[150px]"
+            className="bg-white dark:bg-slate-955 border border-slate-250 dark:border-slate-800 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-[#ff512f] shadow-sm min-w-[150px]"
           >
             <option value="All">All Statuses</option>
             <option value="Pending">Pending</option>
@@ -254,41 +254,41 @@ export default function AdminOrders() {
       </div>
 
       {/* Main Table Section */}
-      <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden mb-10">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200/60 dark:border-slate-800/60 overflow-hidden mb-10 transition-colors">
         <div className="overflow-x-auto scrollbar-hide">
           <table className="w-full text-left border-separate border-spacing-0">
             <thead>
-              <tr className="bg-slate-100">
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Order ID</th>
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Customer</th>
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Product</th>
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Amount</th>
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200">Date & Time</th>
-                <th className="px-6 py-5 text-[13px] font-bold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200 text-center">Product Status</th>
+              <tr className="bg-slate-50 dark:bg-slate-950">
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">Order ID</th>
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">Customer</th>
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">Product</th>
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">Amount</th>
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">Date & Time</th>
+                <th className="px-6 py-5 text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-800 text-center">Product Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
               {paginatedItems.length > 0 ? (
                 paginatedItems.map((item, idx) => {
                   const order = item.parentOrder;
                   return (
-                    <tr key={`${order.id}-${item.productId}-${idx}`} className="hover:bg-slate-50/80 transition-all duration-200 group">
-                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-50">
+                    <tr key={`${order.id}-${item.productId}-${idx}`} className="hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-all duration-200 group">
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100 dark:border-slate-800/40">
                         <div className="flex flex-col gap-1 items-start">
-                          <span className="bg-purple-50 text-purple-700 px-2.5 py-1 rounded-md text-[13px] font-bold border border-purple-100">
+                          <span className="bg-rose-50 dark:bg-rose-950/25 text-[#ff512f] dark:text-[#ff512f]/90 px-2.5 py-1 rounded-md text-[13px] font-bold border border-rose-100 dark:border-rose-900/30">
                             #{order.id}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 border-b border-slate-100 min-w-[200px]">
+                      <td className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/40 min-w-[200px]">
                         <div className="flex flex-col">
-                          <div className="text-[14px] font-bold text-slate-900 leading-tight">{order.shippingFullName}</div>
-                          <div className="text-[12px] text-slate-500 font-semibold mt-0.5 flex items-center gap-1">
+                          <div className="text-[14px] font-bold text-slate-900 dark:text-white leading-tight">{order.shippingFullName}</div>
+                          <div className="text-[12px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5 flex items-center gap-1">
                             <Phone size={10} className="text-slate-400" />
                             {order.shippingPhone}
                           </div>
                           {(order.shippingStreet || order.shippingCity || order.shippingState) && (
-                            <div className="text-[11px] text-slate-500 mt-1 flex items-start gap-1">
+                            <div className="text-[11px] text-slate-500 dark:text-slate-450 mt-1 flex items-start gap-1">
                               <MapPin size={10} className="text-slate-400 mt-0.5 shrink-0" />
                               <span className="line-clamp-2 leading-tight">
                                 {[order.shippingStreet, order.shippingCity, order.shippingState].filter(Boolean).join(", ")}
@@ -297,31 +297,31 @@ export default function AdminOrders() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 border-b border-slate-100 max-w-[250px]">
+                      <td className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/40 max-w-[250px]">
                         <div className="flex items-center gap-2">
-                          <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded flex items-center justify-center font-bold shrink-0 border border-slate-200 text-xs">
+                          <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded flex items-center justify-center font-bold shrink-0 border border-slate-200 dark:border-slate-700 text-xs">
                             {item.quantity}x
                           </span>
-                          <span className="text-slate-800 font-bold text-[13px] truncate">{item.productName}</span>
+                          <span className="text-slate-800 dark:text-slate-200 font-bold text-[13px] truncate">{item.productName}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100">
-                        <div className="text-[14px] font-bold text-emerald-700">
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100 dark:border-slate-800/40">
+                        <div className="text-[14px] font-bold text-emerald-600 dark:text-emerald-500">
                           ₹{item.unitPrice ? (item.unitPrice * item.quantity).toLocaleString() : order.totalAmount?.toLocaleString()}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100">
-                        <div className="text-[13px] font-bold text-slate-900 flex items-center gap-1.5">
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100 dark:border-slate-800/40">
+                        <div className="text-[13px] font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                           {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100">
+                      <td className="px-6 py-4 whitespace-nowrap border-b border-slate-100 dark:border-slate-800/40">
                         <div className="flex justify-center">
                           <div className="relative group/select w-full max-w-[140px]">
                             <select
                               value={item.status || "Pending"}
                               onChange={(e) => updateOrderItemStatus(order.id, item.productId, e.target.value)}
-                              className={`appearance-none w-full border rounded-lg pl-8 pr-4 py-1.5 text-[12px] font-bold cursor-pointer transition-all outline-none border-transparent shadow-sm ${getStatusColor(item.status || "Pending")} hover:scale-[1.02]`}
+                              className={`appearance-none w-full border rounded-lg pl-8 pr-4 py-1.5 text-[12px] font-bold cursor-pointer transition-all outline-none shadow-sm ${getStatusColor(item.status || "Pending")} hover:scale-[1.02]`}
                             >
                               <option value="Pending">Pending</option>
                               <option value="Confirmed">Confirmed</option>
@@ -345,12 +345,12 @@ export default function AdminOrders() {
                 <tr>
                   <td colSpan="6" className="px-6 py-20 text-center">
                     <div className="flex flex-col items-center justify-center opacity-40">
-                      <Package size={64} className="mb-4 text-slate-300" />
-                      <h3 className="text-xl font-bold text-slate-900">No Orders Found</h3>
+                      <Package size={64} className="mb-4 text-slate-350 dark:text-slate-650" />
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">No Orders Found</h3>
                       <p className="text-slate-500">We couldn't find any orders matching your filters.</p>
                       <button
                         onClick={() => { setSearchQuery(""); setStatusFilter("All"); }}
-                        className="mt-4 text-purple-600 font-bold hover:underline"
+                        className="mt-4 text-[#ff512f] font-bold hover:underline"
                       >
                         Clear all filters
                       </button>
@@ -363,23 +363,23 @@ export default function AdminOrders() {
         </div>
 
         {/* Pagination Controls */}
-        <div className="bg-white px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-          <p className="text-sm text-slate-500">
-            Showing <span className="font-bold text-slate-900">{paginatedItems.length}</span> of <span className="font-bold text-slate-900">{flattenedItems.length}</span> results
+        <div className="bg-slate-50 dark:bg-slate-950 px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between transition-colors">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Showing <span className="font-bold text-slate-900 dark:text-white">{paginatedItems.length}</span> of <span className="font-bold text-slate-900 dark:text-white">{flattenedItems.length}</span> results
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className={`px-4 py-2 border rounded-lg font-bold text-xs transition-colors ${currentPage === 1 ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed" : "bg-white border-slate-300 text-slate-700 hover:bg-slate-50"}`}
+              className={`px-4 py-2 border rounded-lg font-bold text-xs transition-colors ${currentPage === 1 ? "bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed" : "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
             >
               Previous
             </button>
-            <span className="text-xs font-bold text-slate-600 px-2">Page {currentPage} of {totalPages || 1}</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 px-2">Page {currentPage} of {totalPages || 1}</span>
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages || totalPages === 0}
-              className={`px-4 py-2 border rounded-lg font-bold text-xs transition-colors ${currentPage === totalPages || totalPages === 0 ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed" : "bg-purple-600 border-purple-600 text-white hover:bg-purple-700"}`}
+              className={`px-4 py-2 border rounded-lg font-bold text-xs transition-colors ${currentPage === totalPages || totalPages === 0 ? "bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed" : "bg-gradient-to-r from-[#ff512f] to-[#dd2476] border-transparent text-white hover:opacity-95 shadow-md"}`}
             >
               Next
             </button>

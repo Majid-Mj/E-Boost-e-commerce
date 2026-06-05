@@ -357,6 +357,12 @@ export const CartProvider = ({ children }) => {
   // ================= CART =================
 
   const addToCart = async (product) => {
+    const isAlreadyInCart = cart.some(item => item.productId === product.id);
+    if (isAlreadyInCart) {
+      toast.error(`${product.name} is already in the cart!`);
+      return;
+    }
+
     try {
       await api.post(`/Cart/${product.id}`);
       toast.success(`${product.name} added to cart`);

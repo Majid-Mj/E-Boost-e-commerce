@@ -1,219 +1,3 @@
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-// import toast from "react-hot-toast";
-// import { useCart } from "../../contexts/Cartcontext";
-
-// export default function Login() {
-//   const navigate = useNavigate();
-//   const { refreshUserFromLocalStorage } = useCart();
-
-//   const [formData, setFormData] = useState({ email: "", password: "" });
-//   const [errors, setErrors] = useState({});
-//   const [touched, setTouched] = useState({});
-//   const [loading, setLoading] = useState(false);
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleBlur = (e) => {
-//     setTouched((prev) => ({ ...prev, [e.target.name]: true }));
-//   };
-
-//   const validate = () => {
-//     const newErrors = {};
-//     const { email, password } = formData;
-
-//     if (!email) newErrors.email = "Email is required";
-//     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email";
-
-//     if (!password) newErrors.password = "Password is required";
-//     else if (password.length < 6)
-//       newErrors.password = "Minimum 6 characters required";
-
-//     return newErrors;
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     const validationErrors = validate();
-//     setErrors(validationErrors);
-//     if (Object.keys(validationErrors).length > 0) return;
-
-//     setLoading(true);
-//     try {
-//       // Check if admin
-//       const adminRes = await axios.get(
-//         `http://localhost:4444/admin?email=${formData.email}&password=${formData.password}`
-//       );
-
-//       if (adminRes.data.length > 0) {
-//         const admin = adminRes.data[0];
-//         localStorage.setItem("isLoggedIn", "true");
-//         localStorage.setItem("userRole", "admin");
-//         localStorage.setItem("loggedInUser", JSON.stringify(admin));
-
-//         toast.success("Welcome Admin!", {
-//           position: "top-center",
-//           style: {
-//             background: "#1f1b2e",
-//             color: "#4ade80",
-//             fontWeight: "bold",
-//             borderRadius: "10px",
-//             padding: "12px 20px",
-//           },
-//         });
-
-//         navigate("/admin");
-//         return;
-//       }
-
-//       //  checking if user
-//       const userRes = await axios.get(
-//         `http://localhost:4444/users?email=${formData.email}&password=${formData.password}`
-//       );
-
-//       if (userRes.data.length > 0) {
-//         const user = userRes.data[0];
-
-//         //Blocked user check
-//         if (user.isBlocked) {
-//           toast.error("Your account has been blocked by the admin.", {
-//             position: "top-center",
-//             style: {
-//               background: "#1f1b2e",
-//               color: "#ff6666",
-//               fontWeight: "bold",
-//               borderRadius: "10px",
-//               padding: "12px 20px",
-//             },
-//           });
-//           setLoading(false);
-//           return; 
-//         }
-
-//         //Allow login if not blocked
-//         localStorage.setItem("isLoggedIn", "true");
-//         localStorage.setItem("userRole", "user");
-//         localStorage.setItem("loggedInUser", JSON.stringify(user));
-//         refreshUserFromLocalStorage?.();
-
-//         toast.success("Login successful!", {
-//           position: "top-center",
-//           style: {
-//             background: "#1f1b2e",
-//             color: "#4ade80",
-//             fontWeight: "bold",
-//             borderRadius: "10px",
-//             padding: "12px 20px",
-//           },
-//         });
-
-//         navigate("/home");
-//       } else {
-//         toast.error("Invalid credentials!", {
-//           position: "top-center",
-//           style: {
-//             background: "#1f1b2e",
-//             color: "#ff6666",
-//             fontWeight: "bold",
-//             borderRadius: "10px",
-//             padding: "12px 20px",
-//           },
-//         });
-//       }
-//     } catch (error) {
-//       console.error("Login error:", error);
-//       toast.error("Login failed. Try again later.", {
-//         position: "top-center",
-//         style: {
-//           background: "#1f1b2e",
-//           color: "#ff6666",
-//           fontWeight: "bold",
-//           borderRadius: "10px",
-//           padding: "12px 20px",
-//         },
-//       });
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
-//       <div className="bg-[#1e293b] p-8 rounded-xl shadow-md w-[90%] max-w-md border border-gray-700">
-//         <h2 className="text-3xl font-semibold mb-6 text-center text-cyan-400">
-//           Welcome Back
-//         </h2>
-
-//         <form onSubmit={handleSubmit} className="space-y-5">
-//           {/* Email */}
-//           <div>
-//             <label className="block mb-1 text-gray-300">Email</label>
-//             <input
-//               type="email"
-//               name="email"
-//               value={formData.email}
-//               onBlur={handleBlur}
-//               onChange={handleChange}
-//               className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-//             />
-//             {touched.email && errors.email && (
-//               <p className="text-red-400 text-sm mt-1">{errors.email}</p>
-//             )}
-//           </div>
-
-//           {/* Password */}
-//           <div>
-//             <label className="block mb-1 text-gray-300">Password</label>
-//             <input
-//               type="password"
-//               name="password"
-//               value={formData.password}
-//               onBlur={handleBlur}
-//               onChange={handleChange}
-//               className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-//             />
-//             {touched.password && errors.password && (
-//               <p className="text-red-400 text-sm mt-1">{errors.password}</p>
-//             )}
-//           </div>
-
-//           {/* Submit Button */}
-//           <button
-//             type="submit"
-//             disabled={loading}
-//             className="w-full bg-cyan-500 hover:bg-cyan-400 text-black transition duration-300 p-3 rounded-lg font-semibold"
-//           >
-//             {loading ? "Logging in..." : "Login"}
-//           </button>
-//         </form>
-
-//         <p className="text-center mt-5 text-gray-400">
-//           <span
-//             onClick={() => navigate("/forgot-password")}
-//             className="text-cyan-400 hover:underline cursor-pointer block mb-2"
-//           >
-
-//           </span>
-//           Don’t have an account?{" "}
-//           <span
-//             onClick={() => navigate("/signup")}
-//             className="text-cyan-400 hover:underline cursor-pointer"
-//           >
-//             Sign up
-//           </span>
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -236,9 +20,14 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
+    }));
+    setErrors(prev => ({
+      ...prev,
+      [name]: ""
     }));
   };
 
@@ -269,6 +58,10 @@ export default function Login() {
 
     const validationErrors = validate();
     setErrors(validationErrors);
+    setTouched({
+      email: true,
+      password: true
+    });
 
     if (Object.keys(validationErrors).length > 0) return;
 
@@ -290,10 +83,8 @@ export default function Login() {
       const meRes = await api.get("/auth/me");
       console.log("Auth /me response:", meRes.data);
 
-      // pick the user object from whatever field the backend uses
       let user = meRes.data.data || meRes.data.user || meRes.data;
 
-      // try to normalise a variety of role formats coming from .NET backends
       if (user) {
         if (user.roleId != null) {
           user.roleId = Number(user.roleId);
@@ -316,12 +107,9 @@ export default function Login() {
       }
 
       console.log("User after normalisation:", user);
-
       setUser(user);
-
       toast.success("Login successful!");
 
-      // decide where to send them based on the normalized role
       if (
         user.roleId === 2 ||
         user.role === "admin" ||
@@ -334,27 +122,39 @@ export default function Login() {
       }
 
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message ||
-        "Invalid email or password"
-      );
+      const errorMessage = error?.response?.data?.message || "Invalid email or password";
+      toast.error(errorMessage);
+      
+      setFormData(prev => ({
+        ...prev,
+        password: ""
+      }));
+      
+      setErrors({
+        password: errorMessage
+      });
+      
+      setTouched({
+        email: true,
+        password: true
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#0a0a0a] text-white">
-      <div className="bg-[#1e293b] p-8 rounded-xl shadow-md w-[90%] max-w-md border border-gray-700">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-cyan-400">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 px-4 text-left">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm w-[90%] max-w-md border border-slate-200 dark:border-slate-800 text-left">
+        <h2 className="text-2xl font-black mb-6 text-center font-title uppercase tracking-wide bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
           Welcome Back
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5 text-left">
 
           {/* Email */}
           <div>
-            <label className="block mb-1 text-gray-300">
+            <label className="block mb-1.5 text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider text-left">
               Email
             </label>
             <input
@@ -363,10 +163,10 @@ export default function Login() {
               value={formData.email}
               onBlur={handleBlur}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:ring-2 focus:ring-cyan-400"
+              className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-[#ff512f]/40 outline-none text-sm font-semibold"
             />
             {touched.email && errors.email && (
-              <p className="text-red-400 text-sm mt-1">
+              <p className="text-red-500 text-xs mt-1.5 font-bold uppercase tracking-wider">
                 {errors.email}
               </p>
             )}
@@ -374,8 +174,8 @@ export default function Login() {
 
           {/* Password */}
           <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="text-gray-300">
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-slate-650 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
                 Password
               </label>
             </div>
@@ -386,25 +186,25 @@ export default function Login() {
                 value={formData.password}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                className="w-full p-3 pr-10 rounded-lg bg-[#0f172a] text-white border border-gray-600 focus:ring-2 focus:ring-cyan-400 outline-none"
+                className="w-full p-3.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-[#ff512f]/40 outline-none text-sm font-semibold"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 dark:hover:text-slate-200 transition-colors"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {touched.password && errors.password ? (
-              <p className="text-red-400 text-sm mt-1">
+              <p className="text-red-500 text-xs mt-1.5 font-bold uppercase tracking-wider">
                 {errors.password}
               </p>
             ) : null}
-            <div className="flex justify-end mt-2">
+            <div className="flex justify-end mt-2.5">
               <span
                 onClick={() => navigate("/forgot-password")}
-                className="text-sm text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer transition-colors"
+                className="text-xs font-bold uppercase tracking-wider text-[#ff512f] hover:underline cursor-pointer transition-colors"
               >
                 Forgot Password?
               </span>
@@ -415,17 +215,17 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black p-3 rounded-lg font-semibold"
+            className="w-full bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white p-3.5 rounded-xl font-bold uppercase tracking-wider text-xs transition duration-300 shadow-md shadow-orange-500/10 active:scale-95 disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="text-center mt-5 text-gray-400">
+        <p className="text-center mt-6 text-xs text-slate-550 dark:text-slate-400 font-bold uppercase tracking-wider">
           Don’t have an account?{" "}
           <span
             onClick={() => navigate("/signup")}
-            className="text-cyan-400 hover:underline cursor-pointer"
+            className="text-[#ff512f] hover:underline cursor-pointer transition-colors"
           >
             Sign up
           </span>

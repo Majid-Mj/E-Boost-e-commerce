@@ -22,23 +22,21 @@ export default function User() {
     }
   }, [user, navigate]);
 
-  console.log(user)
-
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 flex flex-col">
         <Navbar />
         <div className="pt-16 flex items-center justify-center min-h-[80vh]">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-[#00FFFF] mb-4">
+            <h2 className="text-3xl font-black mb-4 font-title uppercase tracking-wide bg-gradient-to-r from-[#ff512f] to-[#dd2476] bg-clip-text text-transparent">
               Access Denied
             </h2>
-            <p className="text-gray-300 mb-6">
+            <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium text-sm">
               Please log in to view your profile.
             </p>
             <Link
               to="/login"
-              className="bg-[#00FFFF] text-black px-6 py-3 rounded-md font-semibold hover:bg-cyan-400 transition"
+              className="px-6 py-3 bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white rounded-xl font-bold uppercase tracking-wider text-xs transition shadow-md shadow-orange-500/10 hover:opacity-95"
             >
               Login
             </Link>
@@ -50,44 +48,43 @@ export default function User() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 flex flex-col">
       <Navbar />
-      <div className="pt-20 pb-10 flex flex-col items-center justify-center">
-        <div className="bg-[#1f1b2e]/90 backdrop-blur-md w-[90%] max-w-md rounded-2xl p-8 shadow-xl text-center border border-gray-800">
+      <div className="pt-28 pb-10 flex-grow flex flex-col items-center justify-center">
+        <div className="bg-white dark:bg-slate-900 w-[95%] max-w-md rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
           <div className="flex justify-center mb-4">
-            <div className="bg-[#2a243a] rounded-full p-5">
-              <FaUser className="text-gray-400 text-4xl" />
+            <div className="bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-full p-5">
+              <FaUser className="text-slate-400 dark:text-slate-500 text-4xl" />
             </div>
           </div>
 
-          <h2 className="text-2xl font-semibold mb-1">
-            Welcome, <span className="text-[#00FFFF]">{user.fullName || "User"}</span>
+          <h2 className="text-2xl font-black font-title uppercase tracking-wide text-slate-800 dark:text-white mb-1">
+            Welcome, <span className="text-[#ff512f]">{user.fullName || "User"}</span>
           </h2>
-          <p className="text-gray-400 text-sm mb-6">Manage your account details</p>
+          <p className="text-slate-450 dark:text-slate-500 text-xs font-bold uppercase tracking-wider mb-6">Manage your account details</p>
 
           <div className="space-y-3 text-left">
-            <div className="flex items-center gap-3 bg-[#2a243a]/80 p-3 rounded-lg border border-gray-700">
-              <FaUser className="text-purple-400" />
-              <p><span className="text-gray-400">Name:</span> {user.fullName || "N/A"}</p>
+            <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-850 font-semibold text-sm">
+              <FaUser className="text-orange-400" />
+              <p><span className="text-slate-450 dark:text-slate-500">Name:</span> {user.fullName || "N/A"}</p>
             </div>
-            <div className="flex items-center gap-3 bg-[#2a243a]/80 p-3 rounded-lg border border-gray-700">
-              <FaEnvelope className="text-yellow-400" />
-              <p><span className="text-gray-400">Email:</span> {user.email || "N/A"}</p>
+            <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-850 font-semibold text-sm">
+              <FaEnvelope className="text-amber-400" />
+              <p><span className="text-slate-450 dark:text-slate-500">Email:</span> {user.email || "N/A"}</p>
             </div>
-            <div className="flex items-center gap-3 bg-[#2a243a]/80 p-3 rounded-lg border border-gray-700">
-              <FaUserTag className="text-green-400" />
+            <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-850 font-semibold text-sm">
+              <FaUserTag className="text-rose-450" />
               <p>
-                <span className="text-gray-400">Role:</span>{" "}
+                <span className="text-slate-450 dark:text-slate-500">Role:</span>{" "}
                 {user.roleId === 2 ? "Admin" : "User"}
               </p>
             </div>
           </div>
 
           <div className="mt-6 space-y-3">
-
             {user.roleId === 1 && (
               <Link to="/orders">
-                <button className="w-full bg-[#00FFFF] hover:bg-cyan-400 transition p-3 rounded-lg font-semibold flex items-center justify-center gap-2 text-black">
+                <button className="w-full bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition shadow-md shadow-orange-500/10 hover:opacity-95">
                   View Orders
                 </button>
               </Link>
@@ -98,15 +95,13 @@ export default function User() {
                 await logout();
                 navigate("/", { replace: true });
               }}
-              className="w-full bg-[#333041]/80 hover:bg-[#413b55] transition p-3 rounded-lg flex items-center justify-center gap-3 border border-gray-700 mt-4"
+              className="w-full bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition py-3 rounded-xl font-bold uppercase tracking-wider text-xs flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-750"
             >
               <FaSignOutAlt /> Logout
             </button>
           </div>
         </div>
       </div>
-
-
 
       <Footer />
     </div>
