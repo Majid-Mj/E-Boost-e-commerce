@@ -1,13 +1,14 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, lazy, Suspense } from "react";
 import Navbar from "../../Components/Navbar";
 import ProductsView from "../../Components/Productsview";
 import Footer from "../../Components/Footer";
-import Controller3D from "../../Components/Controller3D";
 import HeroSlider from "../../Components/HeroSlider";
 import { Link } from "react-router-dom";
 import { ArrowRight, Cpu, Target, Headphones, Keyboard, ShieldCheck, RefreshCw, BadgePercent, MessageSquare, Heart, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { getCloudinaryUrl } from "../../utils/cloudinary";
 import api from "../../config/api";
+
+const Controller3D = lazy(() => import("../../Components/Controller3D"));
 
 export default function Home() {
   const categoryScrollRef = useRef(null);
@@ -344,7 +345,13 @@ export default function Home() {
                 <div className="absolute top-4 left-4 z-10 px-3 py-1 text-[10px] tracking-widest font-black uppercase bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white rounded shadow-sm">
                   Interactive 3D Preview
                 </div>
-                <Controller3D />
+                <Suspense fallback={
+                  <div className="w-[580px] h-[530px] flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl animate-pulse text-xs text-slate-400">
+                    Loading 3D Controller...
+                  </div>
+                }>
+                  <Controller3D />
+                </Suspense>
               </div>
 
             </div>
