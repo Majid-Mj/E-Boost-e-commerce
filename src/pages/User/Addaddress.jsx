@@ -157,7 +157,7 @@ export default function AddressPage() {
     }
 
     const selectedAddrObject = addresses.find(a => String(a.id) === String(selectedAddressId));
-    localStorage.setItem("userAddress", JSON.stringify(selectedAddrObject));
+    sessionStorage.setItem("userAddress", JSON.stringify(selectedAddrObject));
 
     if (location.state?.buyNowProduct) {
       navigate("/payment", {

@@ -16,7 +16,7 @@ export default function Topbar({ onMenuClick }) {
   // 🔥 Fetch logged-in admin using JWT
   useEffect(() => {
     const fetchAdmin = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token") || sessionStorage.getItem("token");
       if (!token) {
         setLoading(false);
         return;

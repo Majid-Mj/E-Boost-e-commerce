@@ -4,6 +4,21 @@ import AppRoutes from "./routs/AppRoutes";
 import "./index.css";
 import { Toaster } from "react-hot-toast";
 
+// Silence external library deprecation warnings & browser preloading warnings
+const originalWarn = console.warn;
+console.warn = (...args) => {
+  if (
+    args[0] &&
+    typeof args[0] === "string" &&
+    (args[0].includes("THREE.Clock") ||
+      args[0].includes("THREE.Timer") ||
+      args[0].includes("preloaded using link preload"))
+  ) {
+    return;
+  }
+  originalWarn(...args);
+};
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AppRoutes />

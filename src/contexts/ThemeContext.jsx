@@ -5,7 +5,7 @@ const ThemeContext = createContext();
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     // Default to light theme since we are transitioning to the new light EBoost look
-    const stored = localStorage.getItem("theme");
+    const stored = sessionStorage.getItem("theme");
     return stored === "dark" ? "dark" : "light";
   });
 
@@ -16,7 +16,7 @@ export function ThemeProvider({ children }) {
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("theme", theme);
+    sessionStorage.setItem("theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {

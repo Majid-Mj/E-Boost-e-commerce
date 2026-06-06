@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
-import { useCart } from "../../contexts/Cartcontext";
+import { useCart } from "../../contexts/CartContext";
 import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import { CreditCard, Smartphone, Banknote, ShieldCheck } from "lucide-react";
+import api from "../../config/api";
 
 export default function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState("online");
+  const [isProcessing, setIsProcessing] = useState(false);
   const { clearCart, placeOrderFromCart, buyNow, getTotalItems, getTotalPrice } = useCart();
 
-  const savedAddress = JSON.parse(localStorage.getItem("userAddress")) || {};
+  const savedAddress = JSON.parse(sessionStorage.getItem("userAddress")) || {};
 
   const [address] = useState({
     fullName: savedAddress.fullName || savedAddress.name || "",
@@ -24,9 +26,22 @@ export default function Payment() {
     country: savedAddress.country || "",
   });
 
+  let totalPrice = 0;
+  let totalItems = 0;
+
+  if (location.state && location.state.buyNowProduct) {
+    const qty = location.state.buyNowQuantity || 1;
+    totalPrice = location.state.buyNowProduct.price * qty;
+    totalItems = qty;
+  } else {
+    totalPrice = getTotalPrice();
+    totalItems = getTotalItems();
+  }
+
   const handlePayment = async (e) => {
     e.preventDefault();
 
+    // Check delivery address fields
     if (
       !address.fullName ||
       !address.phone ||
@@ -46,43 +61,67 @@ export default function Payment() {
       return;
     }
 
+    setIsProcessing(true);
+
+    // Push/create the order in the backend database (status is Pending)
     let mappedMethod = "Cards";
-    if (paymentMethod === "upi") mappedMethod = "UPI";
-    else if (paymentMethod === "cod") mappedMethod = "CashOnDelivery";
+    if (paymentMethod === "cod") mappedMethod = "CashOnDelivery";
 
-    let success = false;
-    if (location.state && location.state.buyNowProduct) {
-      success = await buyNow(location.state.buyNowProduct.id, {
-        addressId: savedAddress.id,
-        quantity: location.state.buyNowQuantity || 1,
-        paymentMethod: mappedMethod
-      });
-    } else {
-      success = await placeOrderFromCart({
-        addressId: savedAddress.id,
-        paymentMethod: mappedMethod
-      });
-    }
-
-    if (!success) {
+    let responseData = null;
+    try {
+      if (location.state && location.state.buyNowProduct) {
+        responseData = await buyNow(location.state.buyNowProduct.id, {
+          addressId: savedAddress.id,
+          quantity: location.state.buyNowQuantity || 1,
+          paymentMethod: mappedMethod,
+        });
+      } else {
+        responseData = await placeOrderFromCart({
+          addressId: savedAddress.id,
+          paymentMethod: mappedMethod,
+        });
+      }
+    } catch (err) {
+      console.error("Order placement error:", err);
+      toast.error("Failed to place order. Please try again.");
+      setIsProcessing(false);
       return;
     }
 
-    clearCart();
-    navigate("/payment-success", { state: { method: paymentMethod } });
+    const orderId = responseData?.data?.orderId || responseData?.orderId;
+
+    if (!responseData || !orderId) {
+      toast.error("Invalid order placement response.");
+      setIsProcessing(false);
+      return;
+    }
+
+    // If COD, complete checkout and redirect
+    if (paymentMethod === "cod") {
+      clearCart();
+      setIsProcessing(false);
+      navigate("/payment-success", { state: { method: "cod" } });
+    } else {
+      // If Online, call Stripe creation endpoint and redirect the browser to Stripe Checkout Session
+      try {
+        toast.loading("Initiating secure Stripe payment session...", { id: "payment-loader" });
+        const res = await api.post(`/payment/create/${orderId}`);
+
+        const sessionUrl = res.data?.sessionUrl;
+        if (sessionUrl) {
+          toast.success("Redirecting to Stripe...", { id: "payment-loader" });
+          clearCart(); // Clear the cart before redirecting so the cart is empty when they come back
+          window.location.href = sessionUrl;
+        } else {
+          throw new Error("Stripe session URL not found in response.");
+        }
+      } catch (err) {
+        console.error("Stripe Checkout error:", err);
+        toast.error("Stripe gateway initialization failed. Please try again.", { id: "payment-loader" });
+        setIsProcessing(false);
+      }
+    }
   };
-
-  let totalPrice = 0;
-  let totalItems = 0;
-
-  if (location.state && location.state.buyNowProduct) {
-    const qty = location.state.buyNowQuantity || 1;
-    totalPrice = location.state.buyNowProduct.price * qty;
-    totalItems = qty;
-  } else {
-    totalPrice = getTotalPrice();
-    totalItems = getTotalItems();
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 text-left">
@@ -95,11 +134,9 @@ export default function Payment() {
           </h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
-
             {/* Left Column: Form & Address */}
             <div className="lg:col-span-2 space-y-8 text-left">
               <form id="payment-form" onSubmit={handlePayment} className="space-y-8 text-left">
-
                 {/* Section 1: Address */}
                 <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
                   <h2 className="text-base font-bold uppercase tracking-wider mb-4 text-[#ff512f] border-b border-slate-100 dark:border-slate-800 pb-2 text-left">
@@ -111,13 +148,13 @@ export default function Payment() {
                       <div className="flex justify-between items-start gap-4">
                         <div className="text-left">
                           <h3 className="font-bold text-slate-800 dark:text-slate-200 text-base">{address.fullName}</h3>
-                          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1.5">{address.street}, {address.city}</p>
-                          <p className="text-slate-500 dark:text-slate-400 text-xs">{address.state}, {address.zip}, {address.country}</p>
+                          <p className="text-slate-550 dark:text-slate-400 text-xs mt-1.5">{address.street}, {address.city}</p>
+                          <p className="text-slate-550 dark:text-slate-400 text-xs">{address.state}, {address.zip}, {address.country}</p>
                           <p className="text-slate-700 dark:text-slate-350 text-xs font-bold mt-2">Phone: {address.phone}</p>
                         </div>
                         <button
                           type="button"
-                          onClick={() => navigate('/cart/address')}
+                          onClick={() => navigate("/cart/address")}
                           className="text-[#ff512f] text-xs font-bold uppercase tracking-wider hover:underline"
                         >
                           Change
@@ -129,7 +166,7 @@ export default function Payment() {
                       <p className="text-red-500 dark:text-red-400 text-sm font-bold uppercase tracking-wide mb-3">You haven't selected a delivery address.</p>
                       <button
                         type="button"
-                        onClick={() => navigate('/cart/address')}
+                        onClick={() => navigate("/cart/address")}
                         className="px-6 py-2 rounded-xl text-white font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-[#ff512f] to-[#dd2476]"
                       >
                         Select Address
@@ -144,29 +181,20 @@ export default function Payment() {
                     2. Payment Method
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
-                    {/* Card Option */}
-                    <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'card' ? 'border-[#ff512f] bg-[#ff512f]/5 shadow-sm transform -translate-y-0.5' : 'border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700'}`}>
-                      <input type="radio" className="hidden" name="method" value="card" checked={paymentMethod === 'card'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-2.5 rounded-full transition-colors ${paymentMethod === 'card' ? 'bg-[#ff512f] text-white' : 'bg-slate-200 dark:bg-slate-805 text-[#ff512f]'}`}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                    {/* Online Payment Option */}
+                    <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === "online" ? "border-[#ff512f] bg-[#ff512f]/5 shadow-sm transform -translate-y-0.5" : "border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700"}`}>
+                      <input type="radio" className="hidden" name="method" value="online" checked={paymentMethod === "online"} onChange={(e) => setPaymentMethod(e.target.value)} />
+                      <div className={`p-2.5 rounded-full transition-colors ${paymentMethod === "online" ? "bg-[#ff512f] text-white" : "bg-slate-200 dark:bg-slate-855 text-[#ff512f]"}`}>
                         <CreditCard size={18} />
                       </div>
-                      <span className="font-bold text-center text-xs uppercase tracking-wider text-slate-700 dark:text-gray-250">Credit / Debit</span>
-                    </label>
-
-                    {/* UPI Option */}
-                    <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'upi' ? 'border-[#ff512f] bg-[#ff512f]/5 shadow-sm transform -translate-y-0.5' : 'border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700'}`}>
-                      <input type="radio" className="hidden" name="method" value="upi" checked={paymentMethod === 'upi'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-2.5 rounded-full transition-colors ${paymentMethod === 'upi' ? 'bg-[#ff512f] text-white' : 'bg-slate-200 dark:bg-slate-805 text-[#ff512f]'}`}>
-                        <Smartphone size={18} />
-                      </div>
-                      <span className="font-bold text-center text-xs uppercase tracking-wider text-slate-700 dark:text-gray-250">UPI App</span>
+                      <span className="font-bold text-center text-xs uppercase tracking-wider text-slate-700 dark:text-gray-250">Online Payment</span>
                     </label>
 
                     {/* COD Option */}
-                    <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === 'cod' ? 'border-[#ff512f] bg-[#ff512f]/5 shadow-sm transform -translate-y-0.5' : 'border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700'}`}>
-                      <input type="radio" className="hidden" name="method" value="cod" checked={paymentMethod === 'cod'} onChange={(e) => setPaymentMethod(e.target.value)} />
-                      <div className={`p-2.5 rounded-full transition-colors ${paymentMethod === 'cod' ? 'bg-[#ff512f] text-white' : 'bg-slate-200 dark:bg-slate-805 text-[#ff512f]'}`}>
+                    <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 ${paymentMethod === "cod" ? "border-[#ff512f] bg-[#ff512f]/5 shadow-sm transform -translate-y-0.5" : "border-slate-200 dark:border-slate-855 bg-slate-50 dark:bg-slate-950/40 hover:border-slate-350 dark:hover:border-slate-700"}`}>
+                      <input type="radio" className="hidden" name="method" value="cod" checked={paymentMethod === "cod"} onChange={(e) => setPaymentMethod(e.target.value)} />
+                      <div className={`p-2.5 rounded-full transition-colors ${paymentMethod === "cod" ? "bg-[#ff512f] text-white" : "bg-slate-200 dark:bg-slate-855 text-[#ff512f]"}`}>
                         <Banknote size={18} />
                       </div>
                       <span className="font-bold text-center text-xs uppercase tracking-wider text-slate-700 dark:text-gray-250">Cash on Delivery</span>
@@ -175,58 +203,24 @@ export default function Payment() {
 
                   {/* Dynamic Sub-forms */}
                   <div className="mt-6 text-left">
-                    {paymentMethod === "card" && (
-                      <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 space-y-4 text-left">
-                        <input
-                          type="text"
-                          placeholder="Cardholder Name"
-                          className="w-full p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-850 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
-                          required
-                        />
-                        <div className="relative">
-                          <CreditCard size={18} className="absolute left-3 top-3.5 text-slate-400" />
-                          <input
-                            type="text"
-                            placeholder="Card Number"
-                            className="w-full p-3 pl-10 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-855 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
-                            required
-                          />
+                    {paymentMethod === "online" && (
+                      <div className="p-6 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 flex items-start gap-3 text-left">
+                        <CreditCard className="text-[#ff512f] shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-slate-800 dark:text-slate-200 font-bold text-sm uppercase tracking-wide">Secure Stripe Checkout</p>
+                          <p className="text-slate-550 dark:text-slate-400 text-xs font-medium mt-1 leading-relaxed">
+                            You will be redirected to the secure Stripe Checkout portal to complete your payment. All major credit/debit cards and localized payment options are supported.
+                          </p>
                         </div>
-                        <div className="flex gap-4">
-                          <input
-                            type="text"
-                            placeholder="MM/YY"
-                            className="w-1/2 p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-855 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
-                            required
-                          />
-                          <input
-                            type="text"
-                            placeholder="CVV"
-                            className="w-1/2 p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-855 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
-                            required
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {paymentMethod === "upi" && (
-                      <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 text-left">
-                        <label className="block text-slate-500 dark:text-slate-400 mb-2 text-xs font-bold uppercase tracking-wider">Enter your Virtual Payment Address (VPA)</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. username@bank"
-                          className="w-full p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-855 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff512f]/45 text-sm font-semibold"
-                          required
-                        />
                       </div>
                     )}
 
                     {paymentMethod === "cod" && (
                       <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 flex items-start gap-3 text-left">
-                        <ShieldCheck className="text-green-55 shrink-0 mt-0.5" />
+                        <ShieldCheck className="text-green-550 shrink-0 mt-0.5" />
                         <div>
                           <p className="text-slate-800 dark:text-slate-200 font-bold text-sm uppercase tracking-wide">Pay on Delivery</p>
-                          <p className="text-slate-500 dark:text-slate-400 text-xs font-medium mt-1 leading-relaxed">Please keep exact change ready. You can pay via Cash or UPI at your doorstep.</p>
+                          <p className="text-slate-550 dark:text-slate-400 text-xs font-medium mt-1 leading-relaxed">Please keep exact change ready. You can pay via Cash or UPI at your doorstep.</p>
                         </div>
                       </div>
                     )}
@@ -259,10 +253,10 @@ export default function Payment() {
                 <button
                   type="submit"
                   form="payment-form"
-                  disabled={!address.fullName || totalItems === 0}
+                  disabled={!address.fullName || totalItems === 0 || isProcessing}
                   className="w-full bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-95 transition shadow-md shadow-orange-500/10 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {paymentMethod === 'cod' ? 'Proceed to Order' : `Pay ₹${totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                  {isProcessing ? "Processing..." : paymentMethod === "cod" ? "Proceed to Order" : `Pay ₹${totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                 </button>
 
                 <p className="text-center text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider mt-4 flex items-center justify-center gap-1">
@@ -270,7 +264,6 @@ export default function Payment() {
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </main>

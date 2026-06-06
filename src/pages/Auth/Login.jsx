@@ -74,9 +74,11 @@ export default function Login() {
       });
 
       if (loginRes.data?.accessToken) {
+        sessionStorage.setItem("token", loginRes.data.accessToken);
         localStorage.setItem("token", loginRes.data.accessToken);
       }
       if (loginRes.data?.refreshToken) {
+        sessionStorage.setItem("refreshToken", loginRes.data.refreshToken);
         localStorage.setItem("refreshToken", loginRes.data.refreshToken);
       }
 
@@ -163,6 +165,7 @@ export default function Login() {
               value={formData.email}
               onBlur={handleBlur}
               onChange={handleChange}
+              autoComplete="email"
               className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-[#ff512f]/40 outline-none text-sm font-semibold"
             />
             {touched.email && errors.email && (
@@ -186,6 +189,7 @@ export default function Login() {
                 value={formData.password}
                 onBlur={handleBlur}
                 onChange={handleChange}
+                autoComplete="current-password"
                 className="w-full p-3.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-855 dark:text-white border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-[#ff512f]/40 outline-none text-sm font-semibold"
               />
               <button

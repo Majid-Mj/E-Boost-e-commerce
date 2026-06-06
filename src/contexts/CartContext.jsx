@@ -443,14 +443,13 @@ export const CartProvider = ({ children }) => {
       if (addressData?.addressId) formData.append("AddressId", addressData.addressId);
       if (addressData?.paymentMethod) formData.append("PaymentMethod", addressData.paymentMethod);
 
-      await api.post("/Order/add-from-cart", formData);
-      toast.success("Order placed successfully");
+      const res = await api.post("/Order/add-from-cart", formData);
       loadCart();
       loadOrders();
-      return true;
+      return res.data;
     } catch (err) {
       toast.error("Failed to place order");
-      return false;
+      return null;
     }
   };
 
@@ -462,13 +461,12 @@ export const CartProvider = ({ children }) => {
       if (addressData?.addressId) formData.append("AddressId", addressData.addressId);
       if (addressData?.paymentMethod) formData.append("PaymentMethod", addressData.paymentMethod);
 
-      await api.post("/Order/buy-now", formData);
-      toast.success("Order placed successfully");
+      const res = await api.post("/Order/buy-now", formData);
       loadOrders();
-      return true;
+      return res.data;
     } catch (err) {
       toast.error("Failed to place order");
-      return false;
+      return null;
     }
   };
 

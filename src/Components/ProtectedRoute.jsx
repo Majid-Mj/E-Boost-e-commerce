@@ -15,6 +15,7 @@ export default function ProtectedRoute({ children, role }) {
 
   // Not logged in
   if (!user) {
+    sessionStorage.setItem("last_route_redirect", `ProtectedRoute redirected to /login at ${new Date().toISOString()} because user is null`);
     return <Navigate to="/login" replace />;
   }
 
