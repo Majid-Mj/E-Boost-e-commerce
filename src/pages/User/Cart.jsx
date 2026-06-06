@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useCart } from "../../contexts/Cartcontext";
+import { useCart } from "../../contexts/CartContext";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { Link } from "react-router-dom";

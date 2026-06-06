@@ -4,7 +4,7 @@ import Footer from "../../Components/Footer";
 import { Trash2, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../../config/api";
-import { useCart } from "../../contexts/Cartcontext";
+import { useCart } from "../../contexts/CartContext";
 import { AuthContext } from "../../contexts/AuthContext";
 import { getCloudinaryUrl } from "../../utils/cloudinary";
 

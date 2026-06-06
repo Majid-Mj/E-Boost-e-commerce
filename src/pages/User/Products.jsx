@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
-import { useCart } from "../../contexts/Cartcontext";
+import { useCart } from "../../contexts/CartContext";
 import api from "../../config/api";
 import { ProductCard } from "../../Components/ProductCard";
 import { ProductFilters } from "../../Components/ProductFilters";

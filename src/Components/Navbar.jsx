@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, Heart, User, Menu, X, ChevronDown, LogOut, Phone, Mail, Settings, Sun, Moon } from "lucide-react";
-import { useCart } from "../contexts/Cartcontext";
+import { useCart } from "../contexts/CartContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { AuthContext } from "../contexts/AuthContext";
 import { motion, AnimatePresence } from "motion/react";

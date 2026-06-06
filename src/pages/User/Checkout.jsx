@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
-import { useCart } from "../../contexts/Cartcontext";
+import { useCart } from "../../contexts/CartContext";
 
 export default function ProductDetail() {
   const { id } = useParams();

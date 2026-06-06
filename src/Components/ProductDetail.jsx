@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
-import { useCart } from "../contexts/Cartcontext";
+import { useCart } from "../contexts/CartContext";
 import { Heart, ArrowLeft, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import api from "../config/api";
 import { getCloudinaryUrl } from "../utils/cloudinary";

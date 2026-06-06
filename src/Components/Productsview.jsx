@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useCart } from "../contexts/Cartcontext";
+import { useCart } from "../contexts/CartContext";
 import api from "../config/api";
 import { getCloudinaryUrl } from "../utils/cloudinary";
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { X, Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
-import { useCart } from "../contexts/Cartcontext";
+import { useCart } from "../contexts/CartContext";
 import { getCloudinaryUrl } from "../utils/cloudinary";
 
 export default function SideCart({ isOpen, onClose }) {
