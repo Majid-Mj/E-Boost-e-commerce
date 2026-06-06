@@ -59,7 +59,7 @@ export default function WeeklyDeals() {
             </p>
 
             {/* Countdown Widget */}
-            <div className="flex gap-4 md:gap-6 mb-8">
+            <div className="flex gap-2 sm:gap-4 md:gap-6 mb-8">
               {[
                 { label: "DAYS", value: timeLeft.days },
                 { label: "HOURS", value: timeLeft.hours },

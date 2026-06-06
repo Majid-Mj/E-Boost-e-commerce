@@ -36,11 +36,17 @@ api.interceptors.response.use(
           headers: refreshToken ? { "X-Refresh-Token": refreshToken } : {}
         });
 
-        const newToken = res.data?.accessToken;
+        const responseData = res.data?.data || res.data;
+        const newToken = responseData?.accessToken;
+        const newRefreshToken = responseData?.refreshToken;
         if (newToken) {
           sessionStorage.setItem("token", newToken);
           localStorage.setItem("token", newToken);
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        }
+        if (newRefreshToken) {
+          sessionStorage.setItem("refreshToken", newRefreshToken);
+          localStorage.setItem("refreshToken", newRefreshToken);
         }
 
         return api(originalRequest);

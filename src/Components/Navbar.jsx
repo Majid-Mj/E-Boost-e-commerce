@@ -154,7 +154,7 @@ export default function Navbar() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[110] md:hidden"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[110] md:hidden pointer-events-auto"
                 onClick={closeMenu}
               />
               <motion.div
@@ -162,7 +162,7 @@ export default function Navbar() {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-white dark:bg-slate-950 z-[120] border-l border-slate-200 dark:border-slate-800 md:hidden flex flex-col"
+                className="fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-white dark:bg-slate-950 z-[120] border-l border-slate-200 dark:border-slate-800 md:hidden flex flex-col pointer-events-auto"
               >
                 <div className="p-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
                   <span className="text-lg font-black tracking-widest font-title flex items-center">

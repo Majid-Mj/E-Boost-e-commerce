@@ -73,13 +73,17 @@ export default function Login() {
         password: formData.password
       });
 
-      if (loginRes.data?.accessToken) {
-        sessionStorage.setItem("token", loginRes.data.accessToken);
-        localStorage.setItem("token", loginRes.data.accessToken);
+      const responseData = loginRes.data?.data || loginRes.data;
+      const accessToken = responseData?.accessToken;
+      const refreshToken = responseData?.refreshToken;
+
+      if (accessToken) {
+        sessionStorage.setItem("token", accessToken);
+        localStorage.setItem("token", accessToken);
       }
-      if (loginRes.data?.refreshToken) {
-        sessionStorage.setItem("refreshToken", loginRes.data.refreshToken);
-        localStorage.setItem("refreshToken", loginRes.data.refreshToken);
+      if (refreshToken) {
+        sessionStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("refreshToken", refreshToken);
       }
 
       const meRes = await api.get("/auth/me");

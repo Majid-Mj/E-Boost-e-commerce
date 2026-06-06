@@ -75,10 +75,10 @@ export default function Wishlist() {
               {wishlist.map((item) => (
                 <div
                   key={item.productId}
-                  className="flex items-center justify-between py-6 gap-6 hover:bg-slate-50 dark:hover:bg-slate-950/40 transition-all rounded-xl px-4"
+                  className="flex flex-col sm:flex-row items-center justify-between py-6 gap-4 hover:bg-slate-50 dark:hover:bg-slate-950/40 transition-all rounded-xl px-4"
                 >
                   {/* Left Side: Image & Text */}
-                  <div className="flex items-center gap-6">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto text-center sm:text-left">
                     <div className="w-24 h-24 flex-shrink-0 bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-lg p-2 flex items-center justify-center">
                       <img
                         src={getCloudinaryUrl(item.imageUrl || item.image)}
@@ -87,7 +87,7 @@ export default function Wishlist() {
                       />
                     </div>
 
-                    <div className="flex-1 text-left">
+                    <div className="flex-1 text-center sm:text-left">
                       <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 hover:text-[#ff512f] dark:hover:text-[#ff512f] transition">
                         {item.productName}
                       </h3>
@@ -100,17 +100,17 @@ export default function Wishlist() {
                   </div>
 
                   {/* Right Side: Actions */}
-                  <div className="flex flex-col items-center gap-3">
+                  <div className="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-3 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0 border-slate-100 dark:border-slate-800">
                     <button
                       onClick={() => addToCart({ id: item.productId, name: item.productName })}
-                      className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white px-4 py-2.5 rounded-xl font-bold uppercase tracking-wider text-xs transition shadow-md shadow-orange-500/10 hover:opacity-95"
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff512f] to-[#dd2476] text-white px-4 py-2.5 rounded-xl font-bold uppercase tracking-wider text-xs transition shadow-md shadow-orange-500/10 hover:opacity-95"
                     >
-                      <ShoppingCart size={14} /> Add
+                      <ShoppingCart size={14} /> Add to Cart
                     </button>
 
                     <button
                       onClick={() => handleRemove(item.productId)}
-                      className="text-slate-400 hover:text-red-500 transition mt-1 font-semibold text-xs flex items-center gap-1.5"
+                      className="text-slate-400 hover:text-red-500 transition font-semibold text-xs flex items-center gap-1.5 px-3 py-2.5 sm:p-0 hover:bg-red-50 dark:hover:bg-red-950/20 sm:hover:bg-transparent rounded-xl"
                       title="Remove from Wishlist"
                     >
                       <Trash2 size={15} /> Remove

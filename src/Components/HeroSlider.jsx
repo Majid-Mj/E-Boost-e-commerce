@@ -75,7 +75,7 @@ export default function HeroSlider({ products = [] }) {
   const prevSlide = () => setCurrent((prev) => (prev - 1 + dynamicSlides.length) % dynamicSlides.length);
 
   return (
-    <div className="relative h-[650px] md:h-[750px] w-full bg-gradient-to-br from-white via-slate-50/50 to-slate-100/50 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950/50 overflow-hidden border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
+    <div className="relative h-[720px] sm:h-[650px] md:h-[750px] w-full bg-gradient-to-br from-white via-slate-50/50 to-slate-100/50 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950/50 overflow-hidden border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
       {/* Background Grid Pattern Overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
@@ -89,7 +89,7 @@ export default function HeroSlider({ products = [] }) {
         style={{ backgroundColor: dynamicSlides[current].accentColor }}
       />
 
-      <div className="max-w-7xl mx-auto h-full px-6 md:px-12 flex items-center relative z-10">
+      <div className="max-w-7xl mx-auto h-full px-6 md:px-12 flex items-center pt-24 sm:pt-20 md:pt-0 relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
