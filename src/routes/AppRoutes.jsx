@@ -53,13 +53,13 @@ export default function AppRoutes() {
                 <Route path="/products/:id" element={<ProductDetail />} />
                 <Route path="/product-details/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-                <Route path="/cart/address" element={<Addaddress />} />
-                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/cart/address" element={<ProtectedRoute><Addaddress /></ProtectedRoute>} />
+                <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/User" element={<User />} />
-                <Route path="/address" element={<Addaddress />} />
-                <Route path="/payment" element={<Payment />} />
+                <Route path="/User" element={<ProtectedRoute><User /></ProtectedRoute>} />
+                <Route path="/address" element={<ProtectedRoute><Addaddress /></ProtectedRoute>} />
+                <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
                 <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
                 <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                 <Route path="/admin/*" element={
