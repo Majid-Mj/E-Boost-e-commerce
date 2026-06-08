@@ -4,7 +4,7 @@ import axios from "axios";
 
 
 const api = axios.create({
-  baseURL: "https://eboost-api-ebcwbtapfpc8ced5.centralindia-01.azurewebsites.net/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://eboost-api-ebcwbtapfpc8ced5.centralindia-01.azurewebsites.net/api",
 });
 
 
