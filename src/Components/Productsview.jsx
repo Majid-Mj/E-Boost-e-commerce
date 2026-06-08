@@ -40,7 +40,7 @@ export default function ProductsView() {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.images?.[0]?.imageUrl || product.image || "/assets/placeholder.jpg",
+        image: getCloudinaryUrl(product.images?.[0]?.imageUrl || product.image),
         description:
           product.description ||
           "High-quality product for gamers and enthusiasts.",
