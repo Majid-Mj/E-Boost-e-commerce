@@ -129,9 +129,26 @@
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import api from "../../config/api";
-import { Chart as ChartJS, registerables } from "chart.js";
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
 
-ChartJS.register(...registerables);
+ChartJS.register(
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 export default function SalesChart() {
   const [chartData, setChartData] = useState(null);
@@ -157,8 +174,8 @@ export default function SalesChart() {
         });
 
         const labels = [
-          "Jan","Feb","Mar","Apr","May","Jun",
-          "Jul","Aug","Sep","Oct","Nov","Dec"
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         ];
 
         setChartData({

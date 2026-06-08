@@ -3,7 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Pie, Bar } from "react-chartjs-2";
 import api from "../../../config/api";
 import { useTheme } from "../../../contexts/ThemeContext";
-import { Chart as ChartJS, registerables } from "chart.js";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+} from "chart.js";
 import {
   TrendingUp,
   ShoppingBag,
@@ -15,7 +26,17 @@ import {
   BarChart3
 } from "lucide-react";
 
-ChartJS.register(...registerables);
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Filler
+);
 
 export default function Dashboard() {
   const { theme } = useTheme();
