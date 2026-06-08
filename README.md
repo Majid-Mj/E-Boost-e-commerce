@@ -1,4 +1,4 @@
-# EBoost E-Commerce 🚀
+EBoost E-Commerce 🚀
 
 A modern, full-stack e-commerce frontend built with **React**, **Vite**, and **Tailwind CSS**. Designed for high performance and an exceptional user experience, featuring 3D product visualizations, comprehensive admin dashboards, and seamless payment integrations.
 
@@ -85,7 +85,7 @@ src/
 
 ## 🌐 Deployment
 
-The project is configured for easy deployment on platforms like **Vercel** or **Netlify**.
+The project is configured for easy deployment on platforms like **Vercel**
 
 To build the project for production:
 ```bash
