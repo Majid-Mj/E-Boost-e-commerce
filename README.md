@@ -1,102 +1,165 @@
-EBoost E-Commerce 🚀
+<div align="center">
 
-A modern, full-stack e-commerce frontend built with **React**, **Vite**, and **Tailwind CSS**. Designed for high performance and an exceptional user experience, featuring 3D product visualizations, comprehensive admin dashboards, and seamless payment integrations.
+<br />
 
-## 🌟 Features
+```
+███████╗██████╗  ██████╗  ██████╗ ███████╗████████╗
+██╔════╝██╔══██╗██╔═══██╗██╔═══██╗██╔════╝╚══██╔══╝
+█████╗  ██████╔╝██║   ██║██║   ██║███████╗   ██║
+██╔══╝  ██╔══██╗██║   ██║██║   ██║╚════██║   ██║
+███████╗██████╔╝╚██████╔╝╚██████╔╝███████║   ██║
+╚══════╝╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝   ╚═╝
+```
 
-### For Users
-- **🛍️ Complete Shopping Experience**: Browse products, view detailed descriptions, and add items to your cart or wishlist.
-- **🔐 Secure Authentication**: Full authentication flow including Login, Signup, and Forgot/Reset Password, handled via JWT.
-- **📦 Order Tracking**: View order history and status directly from the user dashboard.
-- **💳 Smooth Checkout**: Integrated payment processing for seamless transactions.
-- **🕶️ 3D Product Views**: Interactive 3D models of select products using Three.js and React Three Fiber.
-- **🌓 Dark Mode Support**: Beautifully designed UI with built-in light and dark modes.
+**A modern, full-stack e-commerce platform built for performance and scale.**
 
-### For Administrators
-- **📊 Interactive Dashboard**: Real-time business analytics, sales charts, and category distribution using Chart.js.
-- **📝 Inventory Management**: Add, edit, delete, and toggle the visibility of products. Supports multi-image uploads via Cloudinary.
-- **👥 User Management**: View and manage customer accounts.
-- **🛒 Order Fulfillment**: Track and manage all customer orders from a centralized panel.
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-latest-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=flat-square)](./LICENSE)
 
-## 🛠️ Technology Stack
+[Live Demo](#) · [Report a Bug](../../issues) · [Request a Feature](../../issues)
 
-- **Framework**: [React 19](https://react.dev/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **Routing**: [React Router v7](https://reactrouter.com/)
-- **State Management**: React Context API
-- **HTTP Client**: [Axios](https://axios-http.com/)
-- **3D Rendering**: [Three.js](https://threejs.org/) & [@react-three/fiber](https://docs.pmnd.rs/react-three-fiber/)
-- **Charts**: [Chart.js](https://www.chartjs.org/) & [react-chartjs-2](https://react-chartjs-2.js.org/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/) & [React Icons](https://react-icons.github.io/react-icons/)
-- **Notifications**: [React Hot Toast](https://react-hot-toast.com/)
+<br />
 
-## 🚀 Getting Started
+</div>
+
+---
+
+## What is EBoost?
+
+EBoost is a production-ready e-commerce frontend that goes beyond the typical CRUD shop. It features **3D product visualizations**, a **full admin control panel**, real-time analytics, and a smooth, animated shopping experience — all backed by a secure JWT-authenticated API.
+
+<br />
+
+## Features
+
+### Storefront
+| Feature | Description |
+|---|---|
+| 🛍️ **Product Browsing** | Rich product pages with descriptions, images, and interactive 3D views |
+| 🔐 **Auth Flow** | Login, signup, forgot password, and JWT-secured sessions |
+| 📦 **Order Tracking** | Full order history and real-time status from the user dashboard |
+| 💳 **Checkout** | Integrated payment processing for seamless transactions |
+| 🕶️ **3D Product Views** | Interactive models powered by Three.js & React Three Fiber |
+| 🌓 **Dark Mode** | Polished UI with first-class light and dark theme support |
+
+### Admin Panel
+| Feature | Description |
+|---|---|
+| 📊 **Analytics Dashboard** | Sales charts, revenue trends, and category breakdowns via Chart.js |
+| 📝 **Inventory Management** | Add, edit, delete products with multi-image upload via Cloudinary |
+| 👥 **User Management** | View and manage all customer accounts |
+| 🛒 **Order Fulfillment** | Centralized order tracking and status management |
+
+<br />
+
+## Tech Stack
+
+```
+Frontend        React 19 · Vite · Tailwind CSS 4 · React Router v7
+State           React Context API
+Data Fetching   Axios
+3D / Visual     Three.js · @react-three/fiber · Chart.js · react-chartjs-2
+Animation       Framer Motion
+UI              Lucide React · React Icons · React Hot Toast
+```
+
+<br />
+
+## Getting Started
 
 ### Prerequisites
 
-- Node.js (v18 or higher recommended)
-- npm or yarn
+- **Node.js** v18 or higher
+- **npm** or **yarn**
 
 ### Installation
 
-1. **Clone the repository** (if applicable) or navigate to the project directory:
-   ```bash
-   cd e-commerce-project
-   ```
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/eboost.git
+cd eboost
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+# 2. Install dependencies
+npm install
 
-3. **Configure Environment Variables**:
-   Create a `.env` file in the root directory and add the following variables:
-   ```env
-   VITE_API_BASE_URL=your_backend_api_url
-   ```
+# 3. Set up environment variables
+cp .env.example .env
+```
 
-4. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
-   The application will be available at `http://localhost:5173`.
+Open `.env` and fill in your values:
 
-## 📁 Project Structure
+```env
+VITE_API_BASE_URL=https://your-backend-api-url.com
+```
 
-```text
+```bash
+# 4. Start the development server
+npm run dev
+```
+
+Visit `http://localhost:5173` — you're live. 🎉
+
+<br />
+
+## Project Structure
+
+```
 src/
-├── animations/       # Framer motion animation variants
-├── api/              # Axios API utility functions and endpoint definitions
-├── Components/       # Reusable UI components (Navbar, Footer, ProductCards, etc.)
-├── config/           # Global configurations (e.g., Axios setup)
-├── contexts/         # React Context providers (Auth, Cart, Theme)
-├── pages/            # Page-level components
-│   ├── Admin/        # Admin dashboard, product/order/user management
+├── animations/       # Framer Motion variants
+├── api/              # Axios utilities and endpoint definitions
+├── Components/       # Reusable UI (Navbar, Footer, ProductCards…)
+├── config/           # Global configs (Axios base setup)
+├── contexts/         # Context providers — Auth, Cart, Theme
+├── pages/
+│   ├── Admin/        # Dashboard, product/order/user management
 │   ├── Auth/         # Login, Signup, Password Recovery
 │   └── User/         # Home, Products, Cart, Checkout, Profile
-├── routes/           # Application routing logic (Admin & Public routes)
-├── utils/            # Helper functions (e.g., Cloudinary image URL parsing)
-├── App.jsx           # Main application entry component
-├── index.css         # Global Tailwind CSS imports
-└── main.jsx          # React DOM render entry point
+├── routes/           # Route guards and app routing logic
+├── utils/            # Helpers (Cloudinary URL parsing, etc.)
+├── App.jsx
+└── main.jsx
 ```
 
-## 🌐 Deployment
+<br />
 
-The project is configured for easy deployment on platforms like **Vercel**
+## Deployment
 
-To build the project for production:
+EBoost is optimized for **Vercel** but works on any static hosting provider.
+
 ```bash
+# Build for production
 npm run build
+
+# Output → /dist (ready to deploy)
 ```
-This will generate optimized static assets in the `dist/` directory, which can be deployed to any static hosting provider.
 
-## 🤝 Contributing
+> **Azure users:** The project is also configured to deploy via GitHub Actions to Azure Static Web Apps. See `.github/workflows/` for the CI/CD pipeline.
 
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page if you want to contribute.
+<br />
 
-## 📄 License
+## Contributing
 
-This project is licensed under the MIT License.
+Contributions are welcome! Here's how:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feat/your-feature`
+3. Commit your changes: `git commit -m 'feat: add your feature'`
+4. Push and open a Pull Request
+
+Please follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
+
+<br />
+
+## License
+
+Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for details.
+
+<br />
+
+---
+
+<div align="center">
+  <sub>Built with ☕ and a lot of late nights · <a href="https://github.com/your-username">@your-username</a></sub>
+</div>
