@@ -129,26 +129,9 @@
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import api from "../../config/api";
-import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
+import { Chart as ChartJS, registerables } from "chart.js";
 
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-  Filler
-);
+ChartJS.register(...registerables);
 
 export default function SalesChart() {
   const [chartData, setChartData] = useState(null);
